@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jason Chew AI Training Center</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Twilio Voice SDK -->
+    <script src="https://sdk.twilio.com/js/client/releases/1.14.0/twilio.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .btn-custom { background-color: #ff6b6b; color: white; }
+        .btn-custom:hover { background-color: #ff5252; }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Jason Chew AI Training Center</h1>
+            <p class="text-gray-500 text-sm">Training Course Inquiry Form</p>
+        </div>
+
+        <form id="callForm" class="space-y-4">
+            <!-- Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+            </div>
+
+            <!-- Mobile Phone -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mobile Phone <span class="text-red-500">*</span></label>
+                <input type="tel" id="mobile_phone" name="mobile_phone" placeholder="+60123456789" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+            </div>
+
+            <!-- Budget -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Budget <span class="text-red-500">*</span></label>
+                <select id="budget" name="budget" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+                    <option value="" disabled selected>Select an option ...</option>
+                    <option value="RM 4,000 to RM 7,000">RM 4,000 to RM 7,000</option>
+                    <option value="RM 7,000 to RM 11,000">RM 7,000 to RM 11,000</option>
+                </select>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">What kind of training courses you are looking for? <span class="text-red-500">*</span></label>
+                <textarea id="course_description" name="course_description" rows="3" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"></textarea>
+            </div>
+
+            <!-- Status Message Area -->
+            <div id="statusMessage" class="text-sm text-center font-medium text-gray-600 hidden"></div>
+
+            <!-- Button -->
+            <button type="submit" id="callButton" class="w-full btn-custom py-3 px-4 rounded-md font-bold shadow hover:shadow-lg transition duration-200">
+                Call To Confirm
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // =========================================================================
+        // CONFIGURATION: PASTE YOUR N8N WORKFLOW URLS HERE
+        // =========================================================================
+        
+        // Workflow 1 URL (Token Generator) - The one with GET method
+        const URL_WORKFLOW_1 = "https://n8ncchew617.zeabur.app/webhook/https://n8ncchew617.zeabur.app/webhook/twilio-token";
+
+        // Workflow 2 URL (Data Receiver) - The one with POST method
+        const URL_WORKFLOW_2 = "https://n8ncchew617.zeabur.app/webhook/outbound-call";
+
+        // =========================================================================
+
+        const form = document.getElementById('callForm');
+        const statusDiv = document.getElementById('statusMessage');
+        const btn = document.getElementById('callButton');
+        let device = null;
+
+        function updateStatus(msg, color = 'text-gray-600') {
+            statusDiv.textContent = msg;
+            statusDiv.className = `text-sm text-center font-medium ${color} mb-4`;
+            statusDiv.classList.remove('hidden');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 1. UI Feedback
+            btn.disabled = true;
+            btn.textContent = "Connecting...";
+            updateStatus("Submitting details and initializing call...");
+
+            // Get Form Data
+            const formData = {
+                name: document.getElementById('name').value,
+                mobile_phone: document.getElementById('mobile_phone').value,
+                email: document.getElementById('email').value,
+                budget: document.getElementById('budget').value,
+                course_description: document.getElementById('course_description').value,
+                clientName: document.getElementById('name').value // For Twilio identity
+            };
+
+            try {
+                // 2. Submit Data to Workflow 2 (Data Logging)
+                // We use 'no-cors' mode if n8n is on a different domain to avoid CORS errors in simple tests, 
+                // but standard 'cors' is better if your server supports it.
+                fetch(URL_WORKFLOW_2, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                }).then(res => console.log("Form data sent to n8n"));
+
+                // 3. Get Token from Workflow 1
+                // We append ?clientName= to the URL as configured in your workflow logic
+                const tokenUrl = `${URL_WORKFLOW_1}?clientName=${encodeURIComponent(formData.name)}`;
+                const tokenRes = await fetch(tokenUrl);
+                
+                // Workflow 1 returns raw text string based on your configuration
+                const token = await tokenRes.text();
+
+                if (!token || token.includes("Error")) {
+                    throw new Error("Failed to get valid token");
+                }
+
+                updateStatus("Connecting audio...", "text-blue-600");
+
+                // 4. Initialize Twilio Device
+                Twilio.Device.setup(token);
+
+                Twilio.Device.ready(function(device) {
+                    console.log("Twilio.Device Ready!");
+                    // Establish the call
+                    // We pass parameters, though standard TwiML apps might ignore them 
+                    // unless specifically configured to read them.
+                    Twilio.Device.connect({
+                        name: formData.name,
+                        budget: formData.budget
+                    });
+                });
+
+                Twilio.Device.error(function(error) {
+                    console.error("Twilio Error: " + error.message);
+                    updateStatus("Call Error: " + error.message, "text-red-600");
+                    btn.disabled = false;
+                    btn.textContent = "Call To Confirm";
+                });
+
+                Twilio.Device.connect(function(conn) {
+                    console.log("Successfully established call");
+                    updateStatus("Call in progress... Speak now!", "text-green-600");
+                });
+
+                Twilio.Device.disconnect(function(conn) {
+                    updateStatus("Call ended.", "text-gray-600");
+                    btn.disabled = false;
+                    btn.textContent = "Call To Confirm";
+                });
+
+            } catch (err) {
+                console.error(err);
+                updateStatus("Error: " + err.message, "text-red-600");
+                btn.disabled = false;
+                btn.textContent = "Call To Confirm";
+            }
+        });
+    </script>
+</body>
+</html>
