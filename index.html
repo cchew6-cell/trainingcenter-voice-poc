@@ -2,9 +2,6 @@
 <html>
 <head>
     <title>AI Voice Agent</title>
-    
-    <script src="retell-sdk.js"></script>
-
     <style>
         body { font-family: sans-serif; padding: 20px; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
@@ -14,43 +11,39 @@
 <body>
 
     <h1>Talk to our AI Agent</h1>
-    
     <p id="status">Status: Initializing...</p>
-    
     <button id="start-call-btn">Start Call</button>
 
-    <script>
+    <script type="module">
+        // Import directly from the ESM cloud
+        import { RetellWebClient } from "https://esm.sh/retell-client-js-sdk";
+
         const btn = document.getElementById('start-call-btn');
         const statusText = document.getElementById('status');
         let retellWebClient;
 
-        // 1. Initialize the SDK
+        // 1. Initialize
         try {
-            if (window.retell) {
-                console.log("SDK Loaded Successfully from retell-sdk.js");
-                statusText.innerText = "Status: Ready (SDK Loaded)";
-                statusText.style.color = "green";
-                retellWebClient = new retell.RetellWebClient();
-            } else {
-                console.error("Retell SDK failed to load! Check retell-sdk.js file.");
-                statusText.innerText = "Error: SDK not loaded. Is retell-sdk.js in the GitHub folder?";
-                statusText.style.color = "red";
-            }
+            console.log("Initializing SDK from Cloud...");
+            retellWebClient = new RetellWebClient();
+            
+            statusText.innerText = "Status: Ready (SDK Loaded from Cloud)";
+            statusText.style.color = "green";
+            console.log("SDK Ready");
         } catch (err) {
             console.error("Initialization Error:", err);
             statusText.innerText = "Error: " + err.message;
+            statusText.style.color = "red";
         }
 
-        // 2. Handle Button Click
+        // 2. Button Click
         btn.addEventListener('click', async () => {
-            if (!retellWebClient) return alert("SDK not loaded yet!");
+            if (!retellWebClient) return alert("SDK not ready!");
 
             statusText.innerText = "Status: Connecting to n8n...";
             
             try {
-                // ✅ YOUR WEBHOOK URL
-                // Note: 'webhook-test' requires your n8n window to be open and 'Listening'.
-                // If you activate the workflow, change this to 'webhook' (remove -test).
+                // Your n8n Webhook URL
                 const n8nUrl = 'https://n8ncchew617.zeabur.app/webhook-test/start-webcall'; 
 
                 const response = await fetch(n8nUrl, {
@@ -58,7 +51,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`n8n Error: ${response.status} ${response.statusText}`);
+                    throw new Error(`n8n Error: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -70,21 +63,21 @@
                 });
                 
                 statusText.innerText = "Status: Call in Progress 📞";
+                statusText.style.color = "blue";
 
             } catch (error) {
                 console.error("Call Failed:", error);
                 statusText.innerText = "Error: " + error.message;
+                statusText.style.color = "red";
             }
         });
 
-        // 4. Handle End Call
-        if (retellWebClient) {
-            retellWebClient.on('call_ended', () => {
-                console.log('Call ended');
-                statusText.innerText = "Status: Call Ended";
-                statusText.style.color = "#555";
-            });
-        }
+        // 4. Handle Events
+        retellWebClient.on('call_ended', () => {
+            console.log('Call ended');
+            statusText.innerText = "Status: Call Ended";
+            statusText.style.color = "#555";
+        });
     </script>
 </body>
 </html>
