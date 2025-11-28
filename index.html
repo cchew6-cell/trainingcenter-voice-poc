@@ -2,36 +2,89 @@
 <html>
 <head>
     <title>AI Voice Agent</title>
-    <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.global.js"></script>
+    
+    <script src="retell-sdk.js"></script>
+
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #status { margin-bottom: 10px; font-weight: bold; color: #555; }
+    </style>
 </head>
 <body>
 
     <h1>Talk to our AI Agent</h1>
+    
+    <p id="status">Status: Initializing...</p>
+    
     <button id="start-call-btn">Start Call</button>
 
     <script>
         const btn = document.getElementById('start-call-btn');
-        const retellWebClient = new retell.RetellWebClient();
+        const statusText = document.getElementById('status');
+        let retellWebClient;
 
+        // 1. Initialize the SDK
+        try {
+            if (window.retell) {
+                console.log("SDK Loaded Successfully from retell-sdk.js");
+                statusText.innerText = "Status: Ready (SDK Loaded)";
+                statusText.style.color = "green";
+                retellWebClient = new retell.RetellWebClient();
+            } else {
+                console.error("Retell SDK failed to load! Check retell-sdk.js file.");
+                statusText.innerText = "Error: SDK not loaded. Is retell-sdk.js in the GitHub folder?";
+                statusText.style.color = "red";
+            }
+        } catch (err) {
+            console.error("Initialization Error:", err);
+            statusText.innerText = "Error: " + err.message;
+        }
+
+        // 2. Handle Button Click
         btn.addEventListener('click', async () => {
-            // 2. Call your n8n Webhook
-            // REPLACE THIS URL WITH YOUR N8N PRODUCTION WEBHOOK URL
-            const response = await fetch('https://n8ncchew617.zeabur.app/webhook-test/start-webcall', {
-                method: 'POST'
-            });
+            if (!retellWebClient) return alert("SDK not loaded yet!");
 
-            const data = await response.json();
+            statusText.innerText = "Status: Connecting to n8n...";
+            
+            try {
+                // ✅ YOUR WEBHOOK URL
+                // Note: 'webhook-test' requires your n8n window to be open and 'Listening'.
+                // If you activate the workflow, change this to 'webhook' (remove -test).
+                const n8nUrl = 'https://n8ncchew617.zeabur.app/webhook-test/start-webcall'; 
 
-            // 3. Start the Call using the token from n8n
-            await retellWebClient.startCall({
-                accessToken: data.access_token
-            });
+                const response = await fetch(n8nUrl, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`n8n Error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                statusText.innerText = "Status: Token Received. Starting Call...";
+
+                // 3. Start the Call
+                await retellWebClient.startCall({
+                    accessToken: data.access_token
+                });
+                
+                statusText.innerText = "Status: Call in Progress 📞";
+
+            } catch (error) {
+                console.error("Call Failed:", error);
+                statusText.innerText = "Error: " + error.message;
+            }
         });
 
-        // Handle when the call ends
-        retellWebClient.on('call_ended', () => {
-            console.log('Call ended');
-        });
+        // 4. Handle End Call
+        if (retellWebClient) {
+            retellWebClient.on('call_ended', () => {
+                console.log('Call ended');
+                statusText.innerText = "Status: Call Ended";
+                statusText.style.color = "#555";
+            });
+        }
     </script>
 </body>
 </html>
