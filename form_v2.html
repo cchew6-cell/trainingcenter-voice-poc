@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jason Chew AI Training Center (v5.0 - Typo Fixed)</title>
+    <title>Jason Chew AI Training Center (v6.0 - PRODUCTION)</title>
     <script src="https://www.google.com/recaptcha/api.js?render=6LzdaxaAqAAAAIf-J74fX-a4AcCunrvqG1g4k7e"></script>
     <script 
         id="retail-widget"
@@ -29,7 +29,7 @@
 <body>
 
     <div class="form-container">
-        <h2>Jason Chew AI Training Center (v5.0)</h2>
+        <h2>Jason Chew AI Training Center (v6.0)</h2>
         <h3>Training Courses Inquiry</h3>
 
         <label for="name">Name *</label>
@@ -61,8 +61,9 @@
     </div>
 
     <script>
-        // CONFIGURATION - CORRECTED URL (Double 'c')
-        const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db7f9be7e";
+        // CONFIGURATION - PRODUCTION URL (No '-test')
+        // This connects to the live, always-on listener.
+        const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db7f9be7e";
 
         const submitBtn = document.getElementById('submitBtn');
         const callToConfirmBtn = document.getElementById('callToConfirmBtn');
@@ -83,7 +84,7 @@
             const params = new URLSearchParams(data).toString();
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
-            // GET Request (Safest for this setup)
+            // GET Request (The one that we proved works)
             await fetch(fullUrl, {
                 method: "GET",
                 mode: "no-cors"
@@ -103,7 +104,7 @@
 
             try {
                 await sendToN8n(data);
-                alert("Form submitted! (Typo Fixed)");
+                alert("Form submitted! (Live Production)");
             } catch (error) {
                 console.error("Submission Error:", error);
                 alert("Error: " + error.message);
