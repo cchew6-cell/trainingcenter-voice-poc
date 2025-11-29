@@ -2,186 +2,55 @@
 <html>
 <head>
     <title>Phase 2: Training Courses Inquiry</title>
-    <script src="https://cdn.retellai.com/latest/retell-web-client.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
-        .form-container { max-width: 450px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input[type="text"], input[type="email"], input[type="number"], select, textarea { 
-            width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; 
+        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], input[type="email"], input[type="number"], select, textarea {
+            width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
         }
         textarea { resize: vertical; height: 100px; }
-        .button-group { display: flex; justify-content: space-between; margin-top: 30px; }
-        button { padding: 12px 18px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; width: 48%; }
+        .button-group { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; width: 48%; }
         #submitBtn { background-color: #4CAF50; color: white; }
         #callToConfirmBtn { background-color: #dc3545; color: white; }
-        .required-star { color: red; }
         /* Style for the footer */
-        footer { 
-            text-align: center; 
-            margin-top: 30px; 
-            padding: 10px; 
-            font-size: 0.9em; 
-            color: #666; 
-            max-width: 450px; 
-            margin: 0 auto;
-            border-top: 1px solid #ccc;
-        }
+        .contact-info { text-align: center; margin-top: 20px; font-size: 0.8em; }
     </style>
 </head>
 <body>
     <div class="form-container">
         <h1>Jason Chew AI Training Center</h1>
-        <p>Training Courses Inquiry</p>
-        
-        <form id="userForm" action="https://n8ncchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db77d8e7e" method="POST">
-            
-            <label for="name">Name <span class="required-star">*</span></label>
-            <input type="text" id="name" name="Name" required>
+        <h2>Training Courses Inquiry</h2>
+        <form>
+            <label for="name">Name *</label>
+            <input type="text" id="name" name="name" required>
 
-            <label for="email">Email <span class="required-star">*</span></label>
-            <input type="email" id="email" name="Email" required>
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
 
-            <label for="phone">Mobile Phone Number (+60123456789) <span class="required-star">*</span></label>
-            <input type="number" id="phone" name="Mobile Phone Number (+60123456789)" required>
+            <label for="mobile">Mobile Phone Number (+60123456789) *</label>
+            <input type="number" id="mobile" name="mobile" required>
 
-            <label for="budget">Budget <span class="required-star">*</span></label>
-            <select id="budget" name="Budget" required>
+            <label for="budget">Budget *</label>
+            <select id="budget" name="budget" required>
                 <option value="">Select an option ...</option>
-                <option value="<RM4,000">&lt;RM4,000</option>
-                <option value="RM4,000 to RM7,000">RM4,000 to RM7,000</option>
-                <option value="RM7,000 to RM11,000">RM7,000 to RM11,000</option>
-            </select>
-            
-            <label for="description">Please describe your training course requirement <span class="required-star">*</span></label>
-            <textarea id="description" name="Please describe your training course requirement" required></textarea>
+                </select>
 
-            <input type="hidden" name="formAction" value="submit" id="submitActionField">
+            <label for="requirements">Please describe your training course requirement *</label>
+            <textarea id="requirements" name="requirements" required></textarea>
 
             <div class="button-group">
                 <button type="submit" id="submitBtn">Submit (Log Only)</button>
-                
                 <button type="button" id="callToConfirmBtn">Call To Confirm (AI Agent)</button>
             </div>
         </form>
+        <p class="contact-info">Contact: <a href="mailto:JasonChewHDRcbraries@gmail.com">JasonChewHDRcbraries@gmail.com</a></p>
     </div>
     
-    <footer>
-        Contact: <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
-    </footer>
-
     <script>
-        // Production Webhook URL for the Phase 2 Logging workflow (new n8n workflow)
-        const webhookUrl = 'https://n8ncchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db77d8e7e';
-        const callButton = document.getElementById('callToConfirmBtn');
-        const form = document.getElementById('userForm');
-        
-        // ⭐ IMPORTANT: This is the URL for the Phase 1 N8N Workflow that calls Retell to get the ACCESS TOKEN!
-        const phase1TokenWebhookUrl = 'YOUR_PHASE_1_WEBHOOK_URL_THAT_RETURNS_TOKEN'; 
-        
-        let retellWebClient;
-        try {
-            // Initialization for the simpler CDN load using the globally exposed class
-            retellWebClient = new RetellWebClient();
-            console.log("Retell SDK initialized.");
-
-            retellWebClient.on('call_ended', () => {
-                alert('Call ended.');
-                console.log('WebRTC Call ended.');
-            });
-        } catch (err) {
-            console.error("SDK Initialization Error:", err);
-            // This alert triggers if the client fails to initialize after loading the script
-            alert('SDK failed to initialize. Check browser console.'); 
-        }
-        
-        // --- WEBRTC IMPLEMENTATION ---
-        async function initiateWebRtcCall(data) {
-            // Check if the RetellWebClient class exists (ensures SDK loaded)
-            if (typeof RetellWebClient === 'undefined') {
-                 alert("Error: Voice Agent SDK not loaded. Cannot start call.");
-                 return;
-            }
-
-            console.log("Starting WebRTC call for:", data.Name);
-            alert(`Contacting AI Agent now for ${data.Name}. Please wait...`);
-
-            try {
-                // 1. CALL PHASE 1 N8N WORKFLOW TO GET ACCESS TOKEN
-                const response = await fetch(phase1TokenWebhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data) 
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Token Webhook Error: ${response.status} ${response.statusText}`);
-                }
-
-                const responseData = await response.json();
-                const accessToken = responseData.access_token; 
-
-                if (!accessToken) {
-                    throw new Error("Could not retrieve access_token from the Phase 1 webhook response.");
-                }
-
-                // 2. START THE CALL using the token and the collected form data
-                await retellWebClient.startCall({
-                    accessToken: accessToken,
-                    variables: data 
-                });
-                
-                console.log("WebRTC Call successfully started.");
-
-            } catch (error) {
-                console.error("Call Initiation Failed:", error);
-                alert(`Error starting call: ${error.message}`);
-            }
-        }
-        // ----------------------------------------------------
-
-        callButton.addEventListener('click', function(event) {
-            event.preventDefault(); 
-            
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            // Collect all form data 
-            const data = {
-                'Name': document.getElementById('name').value,
-                'Email': document.getElementById('email').value,
-                'Mobile Phone Number (+60123456789)': document.getElementById('phone').value,
-                'Budget': document.getElementById('budget').value,
-                'Please describe your training course requirement': document.getElementById('description').value,
-                'formAction': 'call', 
-                'timestamp': new Date().toISOString()
-            };
-
-            // 1. Initiate WebRTC Call 
-            initiateWebRtcCall(data);
-
-            // 2. Send Data to n8n Webhook for Logging 
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Phase 2 Logging successfully triggered.');
-                } else {
-                    console.error('Failed to trigger Phase 2 Logging.');
-                }
-            })
-            .catch(error => {
-                console.error('Network error during Phase 2 logging:', error);
-            });
-        });
+        // Add your Retell AI initialization and call logic here (e.g., using RetellWebClient)
     </script>
 </body>
 </html>
