@@ -18,6 +18,7 @@
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
         .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
         label { display: block; margin-top: 10px; font-weight: bold; }
+        /* Corrected input types to handle formatting errors */
         input[type="text"], input[type="email"], input[type="tel"], select, textarea {
             width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
         }
@@ -63,7 +64,7 @@
     </div>
     
     <script>
-        // FINAL FIX: This must be the PRODUCTION URL from n8n.
+        // FINAL FIX: This must be the PRODUCTION URL from n8n for public use.
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/production/80caca4-0740-48af-9494-535db7f9be7e"; 
         
         let isCallActive = false;
@@ -109,7 +110,7 @@
                     alert(`Submission failed: Server responded with status ${response.status}. Check n8n logs.`);
                 }
             } catch (error) {
-                // This alert indicates a network or CORS policy failure.
+                // This alert will appear if the connection timed out or was blocked by CORS.
                 alert(`Submission failed: Could not connect to webhook. Error: ${error.message}. Check n8n CORS configuration.`);
             } finally {
                 submitButton.textContent = "Submit (Log Only)";
