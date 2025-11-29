@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Phase 2: Training Courses Inquiry</title>
-    <script src="https://assets.retellai.com/retell-web-client.js"></script>
+    <script src="https://cdn.retellai.com/latest/retell-web-client.js"></script>
 
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
@@ -84,7 +84,7 @@
         try {
             // Initialization for the simpler CDN load using the globally exposed class
             retellWebClient = new RetellWebClient();
-            console.log("Retell SDK initialized via simple CDN.");
+            console.log("Retell SDK initialized.");
 
             retellWebClient.on('call_ended', () => {
                 alert('Call ended.');
@@ -92,6 +92,8 @@
             });
         } catch (err) {
             console.error("SDK Initialization Error:", err);
+            // This alert triggers if the client fails to initialize after loading the script
+            alert('SDK failed to initialize. Check browser console.'); 
         }
         
         // --- WEBRTC IMPLEMENTATION ---
