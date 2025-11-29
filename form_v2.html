@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jason Chew AI Training Center (v3.0)</title> <script src="https://www.google.com/recaptcha/api.js?render=6LzdaxaAqAAAAIf-J74fX-a4AcCunrvqG1g4k7e"></script>
+    <title>Jason Chew AI Training Center (v4.0 - GET Mode)</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LzdaxaAqAAAAIf-J74fX-a4AcCunrvqG1g4k7e"></script>
     <script 
         id="retail-widget"
         src="https://dashboard.retailai.com/widget.js"
@@ -28,7 +29,8 @@
 <body>
 
     <div class="form-container">
-        <h2>Jason Chew AI Training Center (v3.0)</h2> <h3>Training Courses Inquiry</h3>
+        <h2>Jason Chew AI Training Center (v4.0)</h2>
+        <h3>Training Courses Inquiry</h3>
 
         <label for="name">Name *</label>
         <input type="text" id="name" name="name" required>
@@ -59,8 +61,7 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // USING YOUR TEST URL - ENSURE 'LISTEN' IS ACTIVE IN N8N
+        // CONFIGURATION
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db7f9be7e";
 
         const submitBtn = document.getElementById('submitBtn');
@@ -78,27 +79,19 @@
             };
         }
 
-        // --- RELIABLE SEND FUNCTION (SIMPLE REQUEST) ---
+        // --- NEW GET METHOD FUNCTION ---
         async function sendToN8n(data) {
-            const formBody = new URLSearchParams();
-            for (const key in data) {
-                formBody.append(key, data[key]);
-            }
+            // Construct URL parameters (e.g., ?name=Jason&email=...)
+            const params = new URLSearchParams(data).toString();
+            const fullUrl = `${WEBHOOK_URL}?${params}`;
 
-            // Removing 'no-cors' mode. 
-            // We use standard POST with standard encoding. 
-            // This skips the Preflight check (CORS friendly) but ensures data delivery.
-            const response = await fetch(WEBHOOK_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: formBody
+            console.log("Attempting to send to:", fullUrl); // Debug log
+
+            // Using GET request - Browsers allow this more easily
+            await fetch(fullUrl, {
+                method: "GET",
+                mode: "no-cors" // Fire and forget
             });
-
-            if (!response.ok) {
-                throw new Error("Server responded with " + response.status);
-            }
         }
 
         // --- SUBMIT BUTTON ---
@@ -115,12 +108,10 @@
 
             try {
                 await sendToN8n(data);
-                alert("Form submitted successfully!");
+                alert("Form submitted! (v4.0 Connection)");
             } catch (error) {
                 console.error("Submission Error:", error);
-                // Even if CORS blocks the response reading, the data USUALLY arrives.
-                // We show success to the user, but log error for debugging.
-                alert("Form submitted! (Note: If you see a console error, ignore it as long as n8n receives data)");
+                alert("Error: " + error.message);
             } finally {
                 submitBtn.textContent = "Submit (Log Only)";
                 submitBtn.disabled = false;
@@ -158,6 +149,7 @@
             }
         });
 
+        // UI Updates
         document.addEventListener('retail-call-started', function() {
             callToConfirmBtn.textContent = "End Call";
             callToConfirmBtn.style.backgroundColor = "#dc3545"; 
