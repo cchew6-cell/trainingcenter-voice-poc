@@ -2,12 +2,16 @@
 <html>
 <head>
     <title>Phase 2: Training Courses Inquiry</title>
+
+    <script src="https://www.google.com/recaptcha/api.js?render=6LzZxooaAAAAAJf-J7HrFsEA6CsmYBQzGpeLJe"></script>
+
     <script 
         id="retell-widget" 
         src="https://dashboard.retellai.com/retell-widget.js" 
         data-public-key="public_key_1000f0a73a7f173bce213" 
         data-agent-id="agent_82cd6100568f17104e22a328a1" 
         data-widget="push-to-talk"
+        data-recaptcha-key="6LcZxxssAAAAAJF-J7lfrFAqEa6Csmy8qQ8peLJe">
     </script>
 
     <style>
@@ -57,30 +61,37 @@
     </div>
     
     <script>
-        document.getElementById('callToConfirmBtn').addEventListener('click', function() {
-            const form = document.getElementById('training-form');
-            
-            // Check if form is valid before triggering the Retell widget
-            if (form.checkValidity()) {
-                // If using the official Retell Callback Widget, clicking a button 
-                // typically opens the widget automatically if it's not set to hide. 
-                // If you want this button to specifically trigger a call with the 
-                // collected number, you might need a different API call or configuration.
-                
-                // Since the Retell Widget is present, try dispatching a custom event 
-                // or referencing the Retell object if it exposes a function to open the modal.
+        // WebRTC Call Control Logic
+        let isCallActive = false;
+        const callButton = document.getElementById('callToConfirmBtn');
 
-                alert("Callback form logic needs to be integrated here, likely triggering a Retell function.");
-                
+        callButton.addEventListener('click', function() {
+            // Check if the Retell object is defined (i.e., the widget script loaded)
+            if (typeof Retell !== 'undefined' && Retell.client) {
+                if (isCallActive) {
+                    // Stop the call
+                    Retell.client.stopCall();
+                    callButton.textContent = "Call To Confirm (AI Agent)";
+                    callButton.style.backgroundColor = '#dc3545';
+                    isCallActive = false;
+                } else {
+                    // Start the call
+                    Retell.client.startCall();
+                    callButton.textContent = "End Call";
+                    callButton.style.backgroundColor = '#007bff'; // Change color to indicate active
+                    isCallActive = true;
+                }
             } else {
-                form.reportValidity();
+                alert("Retell Widget not initialized. Check console for errors or confirm key values.");
             }
         });
-        
-        // Note: With the Retell Widget, the widget typically floats 
-        // or provides a pre-defined form/button. If you wish to use your custom 
-        // "Call To Confirm (AI Agent)" button, you may need to consult Retell's 
-        // documentation for triggering the call programmatically after collecting data.
+
+        // Optional: Listen for Retell events to reset button on call end
+        document.addEventListener('retell:callEnded', function() {
+            callButton.textContent = "Call To Confirm (AI Agent)";
+            callButton.style.backgroundColor = '#dc3545';
+            isCallActive = false;
+        });
     </script>
 </body>
 </html>
