@@ -65,7 +65,7 @@
     
     <script>
         // --- Configuration and Elements ---
-        // FINAL MANDATORY FIX: This must be the PRODUCTION URL from n8n, NOT the /test/ URL.
+        // FINAL FIX: This MUST be the PRODUCTION URL from n8n for public use.
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/production/80caca4-0740-48af-9494-535db7f9be7e"; 
         
         let isCallActive = false;
@@ -93,7 +93,7 @@
 
             const data = getFormData();
             
-            // CONVERT DATA TO URL PARAMETERS (REQUIRED FOR GET METHOD)
+            // FIX: Uses GET method and URL parameters to match n8n webhook setup
             const params = new URLSearchParams(data).toString();
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
