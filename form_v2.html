@@ -63,9 +63,8 @@
     </div>
     
     <script>
-        // --- CRITICAL FIX APPLIED BELOW ---
-        // I have corrected the ID from "80..." to "810..." based on your n8n screenshot.
-        // I also removed the "/production/" segment to match the screenshot exactly.
+        // --- CORRECTED ID: 810... ---
+        // Ensure this exact URL matches what is in your n8n Path
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db7f9be7e"; 
         
         let isCallActive = false;
@@ -83,7 +82,7 @@
             };
         }
 
-        // --- SUBMIT LOGIC (Sends data via GET to webhook) ---
+        // --- SUBMIT (LOG ONLY) LOGIC (Sends data via GET to webhook) ---
         submitButton.addEventListener('click', async function() {
             if (!form.checkValidity()) {
                 form.reportValidity();
@@ -91,6 +90,8 @@
             }
 
             const data = getFormData();
+            
+            // Uses GET method and URL parameters to match n8n webhook setting
             const params = new URLSearchParams(data).toString();
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
@@ -109,14 +110,15 @@
                     alert(`Submission failed: Server responded with status ${response.status}. Check n8n logs.`);
                 }
             } catch (error) {
-                alert(`Submission failed: Could not connect to webhook. Error: ${error.message}`);
+                // This alert indicates a network or CORS policy failure.
+                alert(`Submission failed: Could not connect to webhook. Error: ${error.message}. Check n8n CORS configuration.`);
             } finally {
                 submitButton.textContent = "Submit (Log Only)";
                 submitButton.disabled = false;
             }
         });
 
-        // --- CALL TO CONFIRM LOGIC ---
+        // --- CALL TO CONFIRM (AI AGENT) LOGIC (Starts WebRTC session) ---
         callButton.addEventListener('click', function() {
             if (typeof Retell === 'undefined' || !Retell.client) {
                 alert("Retell Widget not loaded yet. Please wait a moment.");
@@ -130,11 +132,16 @@
                     form.reportValidity();
                     return;
                 }
+
                 const metadata = getFormData();
-                Retell.client.startCall({ metadata: metadata });
+                
+                Retell.client.startCall({
+                    metadata: metadata
+                });
             }
         });
 
+        // Update button UI based on call events
         document.addEventListener('retell:callStarted', function() {
             callButton.textContent = "End Call";
             callButton.style.backgroundColor = '#007bff';
