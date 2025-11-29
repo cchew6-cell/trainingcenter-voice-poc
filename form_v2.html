@@ -15,7 +15,7 @@
         #submitBtn { background-color: #4CAF50; color: white; }
         #callToConfirmBtn { background-color: #dc3545; color: white; }
         .required-star { color: red; }
-        /* Style for the new footer */
+        /* Style for the footer */
         footer { 
             text-align: center; 
             margin-top: 30px; 
@@ -33,7 +33,7 @@
         <h1>Jason Chew AI Training Center</h1>
         <p>Training Courses Inquiry</p>
         
-        <form id="userForm" action="https://n8ncchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db77d8e7e" method="POST">
+        <form id="userForm" action="https://n8ncchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db77d8e7e" method="POST">
             
             <label for="name">Name <span class="required-star">*</span></label>
             <input type="text" id="name" name="Name" required>
@@ -69,45 +69,95 @@
         Contact: <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
     </footer>
 
-    <script>
-        const webhookUrl = 'https://n8ncchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db77d8e7e';
+    <script type="module">
+        // Import the necessary client directly from the cloud CDN (esm.sh)
+        import { RetellWebClient } from 'https://esm.sh/@retell-ai/client-js-sdk';
+
+        // Production Webhook URL for the Phase 2 Logging workflow (new n8n workflow)
+        const webhookUrl = 'https://n8ncchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db77d8e7e';
         const callButton = document.getElementById('callToConfirmBtn');
         const form = document.getElementById('userForm');
+        
+        // ⭐ IMPORTANT: This is the URL for the Phase 1 N8N Workflow that calls Retell to get the ACCESS TOKEN!
+        const phase1TokenWebhookUrl = 'YOUR_PHASE_1_WEBHOOK_URL_THAT_RETURNS_TOKEN'; 
+        
+        // Initialize the Web Client
+        const retellWebClient = new RetellWebClient();
+        console.log("Retell SDK initialized via Cloud (ESM).");
 
-        // --- PLACEHOLDER FOR YOUR EXISTING WEBRTC CODE ---
-        function initiateWebRtcCall(data) {
-            console.log("Starting WebRTC call with data:", data);
-            alert(`Calling AI Agent now for ${data.Name}...`);
+        // Handle call ended event
+        retellWebClient.on('call_ended', () => {
+            alert('Call ended.');
+            console.log('WebRTC Call ended.');
+        });
+        
+        // --- WEBRTC IMPLEMENTATION ---
+        async function initiateWebRtcCall(data) {
             
-            // **[IMPORTANT]** Insert your VAPI/Retell/OpenAI WebRTC SDK code here.
-            // You MUST pass the 'data' object as context variables.
+            console.log("Starting WebRTC call for:", data.Name);
+            alert(`Contacting AI Agent now for ${data.Name}. Please wait...`);
+
+            try {
+                // 1. CALL PHASE 1 N8N WORKFLOW TO GET ACCESS TOKEN
+                const response = await fetch(phase1TokenWebhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Pass all form data to the Phase 1 workflow's webhook
+                    body: JSON.stringify(data) 
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Token Webhook Error: ${response.status} ${response.statusText}`);
+                }
+
+                const responseData = await response.json();
+                
+                // Ensure the response contains the token from the Retell API call
+                const accessToken = responseData.access_token; 
+
+                if (!accessToken) {
+                    throw new Error("Could not retrieve access_token from the Phase 1 webhook response.");
+                }
+
+                // 2. START THE CALL using the token and the collected form data
+                await retellWebClient.startCall({
+                    accessToken: accessToken,
+                    // Pass the collected form data as variables to the AI agent
+                    variables: data 
+                });
+                
+                console.log("WebRTC Call successfully started.");
+
+            } catch (error) {
+                console.error("Call Initiation Failed:", error);
+                alert(`Error starting call: ${error.message}`);
+            }
         }
         // ----------------------------------------------------
 
         callButton.addEventListener('click', function(event) {
             event.preventDefault(); // Stop default form submission
             
-            // Basic validation check
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // Collect all form data for the WebRTC call and the JSON log
+            // Collect all form data 
             const data = {
                 'Name': document.getElementById('name').value,
                 'Email': document.getElementById('email').value,
                 'Mobile Phone Number (+60123456789)': document.getElementById('phone').value,
                 'Budget': document.getElementById('budget').value,
                 'Please describe your training course requirement': document.getElementById('description').value,
-                'formAction': 'call', // Explicitly set action type for n8n
+                'formAction': 'call', // Explicitly set action type for new n8n workflow
                 'timestamp': new Date().toISOString()
             };
 
-            // 1. Initiate WebRTC Call (Client-side)
+            // 1. Initiate WebRTC Call (Client-side, fetches token from Phase 1 Webhook)
             initiateWebRtcCall(data);
 
-            // 2. Send Data to n8n Webhook for Logging (Background POST)
+            // 2. Send Data to n8n Webhook for Logging (Background POST to Phase 2 Webhook)
             fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
@@ -117,13 +167,13 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log('Call initiation logged successfully to n8n.');
+                    console.log('Phase 2 Logging successfully triggered.');
                 } else {
-                    console.error('Failed to log call initiation to n8n.');
+                    console.error('Failed to trigger Phase 2 Logging.');
                 }
             })
             .catch(error => {
-                console.error('Network error during logging:', error);
+                console.error('Network error during Phase 2 logging:', error);
             });
         });
     </script>
