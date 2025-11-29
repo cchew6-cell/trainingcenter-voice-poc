@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Phase 2: Training Courses Inquiry</title>
+    <title>Jason Chew AI Training Center: Training Courses Inquiry</title>
+    
+    <script src="https://www.google.com/recaptcha/api.js?render=6LzZxooaAAAAAJf-J7HrFsEA6CsmYBQzGpeLJe"></script>
     
     <script 
         id="retell-widget" 
@@ -9,6 +11,7 @@
         data-public-key="public_key_1000f0a73a7f173bce213" 
         data-agent-id="agent_82cd6100568f17104e22a328a1" 
         data-widget="push-to-talk"
+        data-recaptcha-key="6LzZxooaAAAAAJf-J7HrFsEA6CsmYBQzGpeLJe"
     ></script>
 
     <style>
@@ -43,8 +46,11 @@
 
             <label for="budget">Budget *</label>
             <select id="budget" name="budget" required>
-                <option value="">Select an option ...</option>
-                </select>
+                <option value="" disabled selected>Select an option ...</option>
+                <option value="low">Below RM 4,000</option>
+                <option value="mid">RM 4,000 - RM 7,000</option>
+                <option value="high">RM 7,000 - RM 11,000</option>
+            </select>
 
             <label for="requirements">Please describe your training course requirement *</label>
             <textarea id="requirements" name="requirements" required></textarea>
@@ -54,7 +60,7 @@
                 <button type="button" id="callToConfirmBtn">Call To Confirm (AI Agent)</button>
             </div>
         </form>
-        <p class="contact-info">Contact: <a href="mailto:JasonChewHDRcbraries@gmail.com">JasonChewHDRcbraries@gmail.com</a></p>
+        <p class="contact-info">Contact: <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a></p>
     </div>
     
     <script>
