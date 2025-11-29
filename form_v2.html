@@ -18,7 +18,8 @@
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
         .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
         label { display: block; margin-top: 10px; font-weight: bold; }
-        input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+        /* Corrected input type to 'tel' for mobile number to prevent parsing errors */
+        input[type="text"], input[type="email"], input[type="tel"], select, textarea { 
             width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
         }
         textarea { resize: vertical; height: 100px; }
@@ -42,7 +43,7 @@
             <input type="email" id="email" name="email" required>
 
             <label for="mobile">Mobile Phone Number (+60123456789) *</label>
-            <input type="tel" id="mobile" name="mobile" required> 
+            <input type="tel" id="mobile" name="mobile" required>
 
             <label for="budget">Budget *</label>
             <select id="budget" name="budget" required>
@@ -65,7 +66,7 @@
     
     <script>
         // --- Configuration and Elements ---
-        // WEBHOOK URL extracted from your n8n screenshot
+        // WEBHOOK URL: Must be the /test/ URL if your n8n is using the "Listen for test event" mode
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/test/80caca4-0740-48af-9494-535db7f9be7e"; 
         
         let isCallActive = false;
@@ -86,13 +87,11 @@
 
         // --- SUBMIT (LOG ONLY) LOGIC (Sends data via GET to webhook) ---
         submitButton.addEventListener('click', async function() {
-            // Validate form first
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
-            // Get form data
             const data = getFormData();
             
             // CONVERT DATA TO URL PARAMETERS (REQUIRED FOR GET METHOD)
@@ -100,26 +99,24 @@
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
             try {
-                // Change button state to indicate loading
                 submitButton.textContent = "Sending...";
                 submitButton.disabled = true;
 
-                // FIX: Changed method to GET to match n8n webhook setting
+                // FIX: Method changed to GET to match n8n webhook setting
                 const response = await fetch(fullUrl, {
                     method: 'GET' 
-                    // No headers or body needed for simple GET request
                 });
 
                 if (response.ok) {
                     alert("Form submitted successfully! Data sent to webhook.");
-                    form.reset(); // Clear form on successful submission
+                    form.reset(); 
                 } else {
-                    alert(`Submission failed: Server responded with status ${response.status}`);
+                    alert(`Submission failed: Server responded with status ${response.status}. Check n8n logs.`);
                 }
             } catch (error) {
-                alert(`Submission failed: Could not connect to webhook. Error: ${error.message}`);
+                // This alert will show if the connection timed out or was blocked
+                alert(`Submission failed: Could not connect to webhook. Error: ${error.message}. Check n8n CORS configuration.`);
             } finally {
-                // Reset button state
                 submitButton.textContent = "Submit (Log Only)";
                 submitButton.disabled = false;
             }
