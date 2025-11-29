@@ -26,7 +26,6 @@
         button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; width: 48%; }
         #submitBtn { background-color: #4CAF50; color: white; }
         #callToConfirmBtn { background-color: #dc3545; color: white; }
-        /* Style for the footer */
         .contact-info { text-align: center; margin-top: 20px; font-size: 0.8em; }
     </style>
 </head>
@@ -64,7 +63,7 @@
     </div>
     
     <script>
-        // FINAL MANDATORY FIX: This must be the PRODUCTION URL from n8n.
+        // WEBHOOK URL: Must be the PRODUCTION URL from n8n for public use.
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/production/80caca4-0740-48af-9494-535db7f9be7e"; 
         
         let isCallActive = false;
@@ -91,6 +90,7 @@
 
             const data = getFormData();
             
+            // Uses GET method and URL parameters to match n8n webhook setting
             const params = new URLSearchParams(data).toString();
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
