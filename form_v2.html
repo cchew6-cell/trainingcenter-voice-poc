@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Jason Chew AI Training Center (v4.0 - GET Mode)</title>
+    <title>Jason Chew AI Training Center (v5.0 - Typo Fixed)</title>
     <script src="https://www.google.com/recaptcha/api.js?render=6LzdaxaAqAAAAIf-J74fX-a4AcCunrvqG1g4k7e"></script>
     <script 
         id="retail-widget"
@@ -29,7 +29,7 @@
 <body>
 
     <div class="form-container">
-        <h2>Jason Chew AI Training Center (v4.0)</h2>
+        <h2>Jason Chew AI Training Center (v5.0)</h2>
         <h3>Training Courses Inquiry</h3>
 
         <label for="name">Name *</label>
@@ -61,8 +61,8 @@
     </div>
 
     <script>
-        // CONFIGURATION
-        const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db7f9be7e";
+        // CONFIGURATION - CORRECTED URL (Double 'c')
+        const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db7f9be7e";
 
         const submitBtn = document.getElementById('submitBtn');
         const callToConfirmBtn = document.getElementById('callToConfirmBtn');
@@ -79,22 +79,17 @@
             };
         }
 
-        // --- NEW GET METHOD FUNCTION ---
         async function sendToN8n(data) {
-            // Construct URL parameters (e.g., ?name=Jason&email=...)
             const params = new URLSearchParams(data).toString();
             const fullUrl = `${WEBHOOK_URL}?${params}`;
 
-            console.log("Attempting to send to:", fullUrl); // Debug log
-
-            // Using GET request - Browsers allow this more easily
+            // GET Request (Safest for this setup)
             await fetch(fullUrl, {
                 method: "GET",
-                mode: "no-cors" // Fire and forget
+                mode: "no-cors"
             });
         }
 
-        // --- SUBMIT BUTTON ---
         submitBtn.addEventListener('click', async function() {
             const data = getFormData('submit');
             
@@ -108,7 +103,7 @@
 
             try {
                 await sendToN8n(data);
-                alert("Form submitted! (v4.0 Connection)");
+                alert("Form submitted! (Typo Fixed)");
             } catch (error) {
                 console.error("Submission Error:", error);
                 alert("Error: " + error.message);
@@ -118,7 +113,6 @@
             }
         });
 
-        // --- CALL BUTTON ---
         callToConfirmBtn.addEventListener('click', async function() {
              if (typeof Retail === 'undefined' || !Retail.client) {
                 alert('Retail widget not loaded. Please wait.');
@@ -136,7 +130,6 @@
             if (isTalkActive) {
                 Retail.client.stopCall();
             } else {
-                // Fire and forget log
                 sendToN8n(data).catch(err => console.log("Log sent (blind)"));
 
                 Retail.client.startCall({
@@ -149,7 +142,6 @@
             }
         });
 
-        // UI Updates
         document.addEventListener('retail-call-started', function() {
             callToConfirmBtn.textContent = "End Call";
             callToConfirmBtn.style.backgroundColor = "#dc3545"; 
