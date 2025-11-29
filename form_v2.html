@@ -2,7 +2,15 @@
 <html>
 <head>
     <title>Phase 2: Training Courses Inquiry</title>
-    <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.min.js"></script>
+    <script 
+        id="retell-widget" 
+        src="https://dashboard.retellai.com/retell-widget.js" 
+        data-public-key="YOUR_RETELL_PUBLIC_KEY" 
+        data-agent-id="YOUR_VOICE_AGENT_ID" 
+        data-widget="callback"
+        data-phone-number="YOUR_RETELL_PHONE_NUMBER">
+    </script>
+
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
         .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
@@ -23,7 +31,7 @@
     <div class="form-container">
         <h1>Jason Chew AI Training Center</h1>
         <h2>Training Courses Inquiry</h2>
-        <form>
+        <form id="training-form">
             <label for="name">Name *</label>
             <input type="text" id="name" name="name" required>
 
@@ -50,7 +58,30 @@
     </div>
     
     <script>
-        // Add your Retell AI initialization and call logic here (e.g., using RetellWebClient)
+        document.getElementById('callToConfirmBtn').addEventListener('click', function() {
+            const form = document.getElementById('training-form');
+            
+            // Check if form is valid before triggering the Retell widget
+            if (form.checkValidity()) {
+                // If using the official Retell Callback Widget, clicking a button 
+                // typically opens the widget automatically if it's not set to hide. 
+                // If you want this button to specifically trigger a call with the 
+                // collected number, you might need a different API call or configuration.
+                
+                // Since the Retell Widget is present, try dispatching a custom event 
+                // or referencing the Retell object if it exposes a function to open the modal.
+
+                alert("Callback form logic needs to be integrated here, likely triggering a Retell function.");
+                
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Note: With the Retell Widget, the widget typically floats 
+        // or provides a pre-defined form/button. If you wish to use your custom 
+        // "Call To Confirm (AI Agent)" button, you may need to consult Retell's 
+        // documentation for triggering the call programmatically after collecting data.
     </script>
 </body>
 </html>
