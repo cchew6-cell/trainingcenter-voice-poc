@@ -2,17 +2,14 @@
 <html>
 <head>
     <title>Phase 2: Training Courses Inquiry</title>
-
-    <script src="https://www.google.com/recaptcha/api.js?render=6LzZxooaAAAAAJf-J7HrFsEA6CsmYBQzGpeLJe"></script>
-
+    
     <script 
         id="retell-widget" 
         src="https://dashboard.retellai.com/retell-widget.js" 
         data-public-key="public_key_1000f0a73a7f173bce213" 
         data-agent-id="agent_82cd6100568f17104e22a328a1" 
         data-widget="push-to-talk"
-        data-recaptcha-key="6LcZxxssAAAAAJF-J7lfrFAqEa6Csmy8qQ8peLJe">
-    </script>
+    ></script>
 
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
@@ -61,32 +58,57 @@
     </div>
     
     <script>
-        // WebRTC Call Control Logic
         let isCallActive = false;
         const callButton = document.getElementById('callToConfirmBtn');
+        const form = document.getElementById('training-form');
+
+        // Function to collect form data into a structured object
+        function getFormData() {
+            return {
+                userName: document.getElementById('name').value,
+                userEmail: document.getElementById('email').value,
+                userMobile: document.getElementById('mobile').value,
+                budget: document.getElementById('budget').value,
+                requirements: document.getElementById('requirements').value
+            };
+        }
 
         callButton.addEventListener('click', function() {
-            // Check if the Retell object is defined (i.e., the widget script loaded)
-            if (typeof Retell !== 'undefined' && Retell.client) {
-                if (isCallActive) {
-                    // Stop the call
-                    Retell.client.stopCall();
-                    callButton.textContent = "Call To Confirm (AI Agent)";
-                    callButton.style.backgroundColor = '#dc3545';
-                    isCallActive = false;
-                } else {
-                    // Start the call
-                    Retell.client.startCall();
-                    callButton.textContent = "End Call";
-                    callButton.style.backgroundColor = '#007bff'; // Change color to indicate active
-                    isCallActive = true;
-                }
+            // 1. Check if Retell client is loaded
+            if (typeof Retell === 'undefined' || !Retell.client) {
+                alert("Retell Widget not loaded yet. Please wait a moment.");
+                return;
+            }
+
+            if (isCallActive) {
+                // 2. Stop the call
+                Retell.client.stopCall();
             } else {
-                alert("Retell Widget not initialized. Check console for errors or confirm key values.");
+                // 3. Start the call
+                
+                // Validate form first
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Get form data to pass as metadata
+                const metadata = getFormData();
+                
+                // Retell's startCall takes an optional metadata object
+                Retell.client.startCall({
+                    metadata: metadata
+                });
             }
         });
 
-        // Optional: Listen for Retell events to reset button on call end
+        // 4. Update button UI based on call events
+        document.addEventListener('retell:callStarted', function() {
+            callButton.textContent = "End Call";
+            callButton.style.backgroundColor = '#007bff';
+            isCallActive = true;
+        });
+
         document.addEventListener('retell:callEnded', function() {
             callButton.textContent = "Call To Confirm (AI Agent)";
             callButton.style.backgroundColor = '#dc3545';
