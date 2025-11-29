@@ -1,5 +1,67 @@
-<script>
-        // CONFIGURATION - Use your TEST URL for now as it works best
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jason Chew AI Training Center: Training Courses Inquiry</title>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LzdaxaAqAAAAIf-J74fX-a4AcCunrvqG1g4k7e"></script>
+    <script 
+        id="retail-widget"
+        src="https://dashboard.retailai.com/widget.js"
+        data-widget-id="62489c74-d4b7-4c7e-9749-014529346d0d"
+        data-agent-id="agent_82c46816-e4f1-78fe62cc96a7"
+        data-render="headless"
+    ></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .form-container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+            width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
+        }
+        textarea { resize: vertical; height: 100px; }
+        .button-group { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; width: 48%; }
+        #submitBtn { background-color: #4CAF50; color: white; }
+        #callToConfirmBtn { background-color: #dc3545; color: white; }
+        .contact-info { text-align: center; margin-top: 20px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Jason Chew AI Training Center</h2>
+        <h3>Training Courses Inquiry</h3>
+
+        <label for="name">Name *</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="mobile">Mobile Phone Number (+60123456789) *</label>
+        <input type="tel" id="mobile" name="mobile" required>
+
+        <label for="budget">Budget *</label>
+        <select id="budget" name="budget" required>
+            <option value="" disabled selected>Select an option...</option>
+            <option value="Below RM 4,000">Below RM 4,000</option>
+            <option value="RM 4,000 - RM 7,000">RM 4,000 - RM 7,000</option>
+            <option value="RM 7,000 - RM 11,000">RM 7,000 - RM 11,000</option>
+        </select>
+
+        <label for="requirements">Please describe your training course requirement *</label>
+        <textarea id="requirements" name="requirements" required></textarea>
+
+        <div class="button-group">
+            <button type="button" id="submitBtn">Submit (Log Only)</button>
+            <button type="button" id="callToConfirmBtn">Call To Confirm (AI Agent)</button>
+        </div>
+
+        <p class="contact-info">Contact: <a href="mailto:JasonChewHDRCTrainer@gmail.com">JasonChewHDRCTrainer@gmail.com</a></p>
+    </div>
+
+    <script>
+        // CONFIGURATION - Using Test URL to ensure connectivity
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook-test/810caca4-0740-48af-9494-535db7f9be7e";
 
         const submitBtn = document.getElementById('submitBtn');
@@ -7,19 +69,18 @@
 
         function getFormData(actionType) {
             return {
-                timestamp: new Date().toISOString(), // Generate time on client side
+                timestamp: new Date().toISOString(), 
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 mobile: document.getElementById('mobile').value,
                 budget: document.getElementById('budget').value,
                 requirements: document.getElementById('requirements').value,
-                formAction: actionType // This is the KEY variable for your IF node
+                formAction: actionType // Key variable for n8n 'If' node
             };
         }
 
         // Reusable function to send data to n8n
         async function sendToN8n(data) {
-            // Convert to URLSearchParams for 'no-cors' mode
             const formBody = new URLSearchParams();
             for (const key in data) {
                 formBody.append(key, data[key]);
@@ -46,7 +107,7 @@
             submitBtn.disabled = true;
 
             try {
-                await sendToN8n(data); // Send to n8n
+                await sendToN8n(data);
                 alert("Form submitted successfully!");
             } catch (error) {
                 console.error("Submission Error:", error);
@@ -77,8 +138,7 @@
             if (isTalkActive) {
                 Retail.client.stopCall();
             } else {
-                // 3. Send log to n8n BEFORE starting call
-                // We don't await this because we want the call to start immediately
+                // 3. Send log to n8n BEFORE starting call (Fire and Forget)
                 sendToN8n(data).catch(err => console.error("Log failed", err));
 
                 // 4. Start the AI Call
@@ -104,3 +164,5 @@
         });
 
     </script>
+</body>
+</html>
