@@ -61,10 +61,9 @@
     </div>
 
     <script>
-        // CONFIGURATION: UPDATE THIS URL
+        // CONFIGURATION
         const WEBHOOK_URL = "https://n8nchew617.zeabur.app/webhook/810caca4-0740-48af-9494-535db7f9be7e";
 
-        const form = document.querySelector('.form-container');
         const submitBtn = document.getElementById('submitBtn');
         const callToConfirmBtn = document.getElementById('callToConfirmBtn');
 
@@ -82,7 +81,6 @@
         submitBtn.addEventListener('click', async function() {
             const data = getFormData();
             
-            // Basic validation
             if (!data.name || !data.email || !data.mobile) {
                 alert("Please fill in all required fields.");
                 return;
@@ -91,23 +89,30 @@
             submitBtn.textContent = "Sending...";
             submitBtn.disabled = true;
 
+            // Convert JSON object to URLSearchParams for 'no-cors' compatibility
+            const formBody = new URLSearchParams();
+            for (const key in data) {
+                formBody.append(key, data[key]);
+            }
+
             try {
-                // FIXED: Changed to POST method to resolve 404/CORS errors
-                const response = await fetch(WEBHOOK_URL, {
+                // FIXED: 'no-cors' mode + 'application/x-www-form-urlencoded'
+                // This forces the data through without waiting for a handshake.
+                await fetch(WEBHOOK_URL, {
                     method: "POST",
+                    mode: "no-cors", 
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: JSON.stringify(data)
+                    body: formBody
                 });
 
-                if (response.ok) {
-                    alert("Form submitted successfully! Data sent to webhook.");
-                } else {
-                    throw new Error(`Server responded with status ${response.status}`);
-                }
+                // With no-cors, we can't see the status code, so we assume success if no network error occurred.
+                alert("Form submitted! (Blind Send Mode)");
+                console.log("Request sent in no-cors mode.");
+
             } catch (error) {
-                alert(`Submission failed: ${error.message}. Check n8n CORS/Method configuration.`);
+                alert(`Submission failed: ${error.message}`);
                 console.error("Submission Error:", error);
             } finally {
                 submitBtn.textContent = "Submit (Log Only)";
@@ -134,10 +139,9 @@
             }
         });
 
-        // Update button UI based on call events
         document.addEventListener('retail-call-started', function() {
             callToConfirmBtn.textContent = "End Call";
-            callToConfirmBtn.style.backgroundColor = "#dc3545"; // Red
+            callToConfirmBtn.style.backgroundColor = "#dc3545"; 
         });
 
         document.addEventListener('retail-call-ended', function() {
