@@ -3,24 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v7)</title>
+    <title>Jason Chew AI Training Center (v8)</title>
     
-    <!-- 1. CRITICAL FIX: Polyfills for Retell SDK -->
+    <!-- ======================================================= -->
+    <!-- CRITICAL FIX: Polyfills for Retell SDK (Node.js Emulation) -->
+    <!-- ======================================================= -->
     <script>
-        // Define global variables required by some Node.js-based SDKs
+        // 1. Define Node.js globals that the SDK expects
         window.global = window;
-        window.process = { env: { NODE_DEBUG: false } };
-    </script>
-    <!-- Load the 'events' library before the SDK -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/events/3.3.0/events.min.js"></script>
-    <script>
-        // Manually assign EventEmitter to window so Retell can find it
-        if (!window.EventEmitter) {
-            window.EventEmitter = window.events; 
+        window.process = { env: { NODE_DEBUG: false, NODE_ENV: 'production' } };
+
+        // 2. Manually define EventEmitter to prevent "undefined" errors
+        // This replaces the need for external 'events' scripts that were failing
+        class EventEmitter {
+            constructor() { this._events = {}; }
+            on(event, listener) {
+                if (!this._events[event]) this._events[event] = [];
+                this._events[event].push(listener);
+                return this;
+            }
+            removeListener(event, listener) {
+                if (!this._events[event]) return this;
+                this._events[event] = this._events[event].filter(l => l !== listener);
+                return this;
+            }
+            emit(event, ...args) {
+                if (!this._events[event]) return false;
+                this._events[event].forEach(l => l.apply(this, args));
+                return true;
+            }
+            once(event, listener) {
+                const remove = (...args) => {
+                    this.removeListener(event, remove);
+                    listener.apply(this, args);
+                };
+                this.on(event, remove);
+                return this;
+            }
         }
+        
+        // 3. Expose it globally
+        window.EventEmitter = EventEmitter;
+        window.events = { EventEmitter: EventEmitter }; 
     </script>
     
-    <!-- 2. Retell AI SDK -->
+    <!-- ======================================================= -->
+    <!-- LOAD RETELL SDK (Must be after the polyfills) -->
+    <!-- ======================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
     
     <style>
@@ -36,7 +65,7 @@
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v7)</h2>
+    <h2>Jason Chew AI Training Center (v8)</h2>
     <h3>Training Course Inquiry Form</h3>
 
     <div id="inquiryForm">
@@ -105,7 +134,7 @@
     }
     
     // --------------------------------------------------------------------------------
-    // UPDATED: Submission Function
+    // Submission Function
     // --------------------------------------------------------------------------------
     async function sendFormData(data) {
         
@@ -133,18 +162,18 @@
             let responseData;
             try {
                 responseData = await response.json();
-                console.log("Raw Response from n8n:", responseData); 
+                console.log("Raw Response from n8n:", responseData); // For Debugging
             } catch (e) {
                 console.warn("Response was not JSON", e);
             }
 
-            // Handle Token Extraction (Supports both Array and Object formats)
+            // Extract Access Token (Handle both Array and Object responses)
             let accessToken = null;
             if (responseData) {
                 if (Array.isArray(responseData) && responseData.length > 0) {
-                    accessToken = responseData[0].access_token; 
+                    accessToken = responseData[0].access_token; // Handle Array
                 } else if (responseData.access_token) {
-                    accessToken = responseData.access_token; 
+                    accessToken = responseData.access_token; // Handle Object
                 }
             }
 
@@ -178,8 +207,8 @@
                 });
 
             } else {
-                // Normal Success (No token found)
-                console.log("No token found in response. Treating as log-only submission.");
+                // Normal Success (No call)
+                console.log("No token found. Normal submission.");
                 if (response.ok) {
                     alert("Form submitted! We will contact you shortly via email.");
                 } else {
