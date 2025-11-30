@@ -3,60 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v8)</title>
+    <title>Jason Chew AI Training Center (v9)</title>
     
     <!-- ======================================================= -->
-    <!-- CRITICAL FIX: Robust Polyfills for Retell SDK (v8)      -->
+    <!-- NEW FIX (v9): Load SDK via ES Modules (Smart CDN)       -->
+    <!-- This handles all dependencies (EventEmitter) auto-magically -->
     <!-- ======================================================= -->
-    <script>
-        // 1. Define Node.js globals
-        window.global = window;
-        window.process = { env: { NODE_DEBUG: false, NODE_ENV: 'production' }, version: '' };
-
-        // 2. Define a robust EventEmitter class
-        class EventEmitter {
-            constructor() { this.events = {}; }
-            on(event, listener) {
-                if (!this.events[event]) this.events[event] = [];
-                this.events[event].push(listener);
-                return this;
-            }
-            removeListener(event, listener) {
-                if (!this.events[event]) return this;
-                this.events[event] = this.events[event].filter(l => l !== listener);
-                return this;
-            }
-            emit(event, ...args) {
-                if (!this.events[event]) return false;
-                this.events[event].forEach(l => l.apply(this, args));
-                return true;
-            }
-            once(event, listener) {
-                const remove = (...args) => {
-                    this.removeListener(event, remove);
-                    listener.apply(this, args);
-                };
-                this.on(event, remove);
-                return this;
-            }
-            off(event, listener) { return this.removeListener(event, listener); }
-            addListener(event, listener) { return this.on(event, listener); }
-            setMaxListeners(n) { return this; } // Stub for compatibility
-        }
-
-        // 3. EXPOSE TO ALL POSSIBLE PATHS (The "Triple Check" Fix)
-        // Some SDKs look for 'EventEmitter' globally
-        window.EventEmitter = EventEmitter;
-        // Some look for a module named 'events' that IS the class
-        window.events = EventEmitter;
-        // Some look for a module named 'events' that HAS a property 'EventEmitter'
-        window.events.EventEmitter = EventEmitter; 
+    <script type="module">
+        // Import from esm.sh which fixes the "EventEmitter" crash automatically
+        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@2.0.26';
+        
+        // Make it available to the rest of your website
+        window.RetellWebClient = RetellWebClient;
+        console.log("Retell SDK loaded successfully via ESM");
     </script>
-    
-    <!-- ======================================================= -->
-    <!-- LOAD RETELL SDK (Must load AFTER the script above)      -->
-    <!-- ======================================================= -->
-    <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
     
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
@@ -71,7 +31,7 @@
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v8)</h2>
+    <h2>Jason Chew AI Training Center (v9)</h2>
     <h3>Training Course Inquiry Form</h3>
 
     <div id="inquiryForm">
@@ -190,6 +150,12 @@
                 console.log("Token found:", accessToken);
                 
                 // Initialize Retell Web Client
+                // (It is now loaded via the module script in <head>)
+                if (typeof RetellWebClient === 'undefined') {
+                    alert("System Error: Retell SDK not loaded yet. Please refresh and try again.");
+                    return;
+                }
+
                 const retellWebClient = new RetellWebClient();
 
                 retellWebClient.on("call_started", () => {
@@ -203,7 +169,9 @@
                 });
                 retellWebClient.on("error", (error) => {
                     console.error("Retell Error:", error);
-                    alert("Error connection: " + JSON.stringify(error));
+                    // Safely stringify error to avoid [object Object] alerts
+                    const errorMsg = error.message || JSON.stringify(error);
+                    alert("Error connection: " + errorMsg);
                     callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
                 });
 
