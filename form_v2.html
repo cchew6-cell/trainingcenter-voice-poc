@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v4)</title>
+    <title>Jason Chew AI Training Center (v5)</title>
+    <!-- 1. ADDED: Retell AI SDK for WebRTC calls -->
+    <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -17,7 +19,7 @@
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v4)</h2>
+    <h2>Jason Chew AI Training Center (v5)</h2>
     <h3>Training Course Inquiry Form</h3>
 
     <div id="inquiryForm">
@@ -47,15 +49,13 @@
         </select>
        </div>
 
-
-
         <div class="form-group">
             <label for="requirements">Please describe your training course requirement *</label>
             <textarea id="requirements" rows="5" required></textarea>
         </div>
 
         <div class="class-button-group">
-            <button type="button" id="submitBtn">Submit.</button>
+            <button type="button" id="submitBtn">Submit (Log Only)</button>
             <button type="button" id="callConfirmBtn">Call To Confirm (AI Agent)</button>
         </div>
 
@@ -64,10 +64,9 @@
         </div>
     </div>
 
-
 <script>
     // --------------------------------------------------------------------------------
-    // Configuration & Webhook URL (Copied from your code)
+    // Configuration
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/e7e8bb21-688c-4e14-849b-28ccca7a2ad7"; 
 
@@ -84,11 +83,13 @@
             mobile: document.getElementById('mobile').value,
             budget: document.getElementById('budget').value,
             requirements: document.getElementById('requirements').value,
-            formAction: actionType, // 'Submit' or 'Call To Confirm'
+            formAction: actionType, 
         };
     }
     
-    // The Corrected Submission Function using POST and JSON
+    // --------------------------------------------------------------------------------
+    // 2. UPDATED: Submission Function with Retell Logic
+    // --------------------------------------------------------------------------------
     async function sendFormData(data) {
         
         // Basic validation check
@@ -100,34 +101,84 @@
         // Lock buttons while sending
         submitBtn.disabled = true;
         callConfirmBtn.disabled = true;
+        
+        // Change button text to show activity
+        const originalBtnText = data.formAction === 'Call To Confirm (AI Agent)' ? callConfirmBtn.innerText : submitBtn.innerText;
+        if(data.formAction === 'Call To Confirm (AI Agent)') callConfirmBtn.innerText = "Connecting...";
+        else submitBtn.innerText = "Sending...";
 
         try {
-            // MANDATORY FIX for n8n to receive the data correctly
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST', 
                 headers: {
-                    'Content-Type': 'application/json', // MUST be JSON
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data), // Convert JS object to JSON string
+                body: JSON.stringify(data), 
             });
 
-            // Handle the response from the n8n workflow
-            if (response.ok) {
-                alert("Form submitted! (Live Production)");
+            // Parse the JSON response from n8n
+            let responseData;
+            try {
+                responseData = await response.json();
+            } catch (e) {
+                console.warn("Response was not JSON", e);
+                // If parsing fails but status is OK, treat as generic success
+                if (response.ok) {
+                    alert("Form submitted successfully! (No call token received)");
+                    return;
+                }
+            }
+
+            // ----------------------------------------------------------------
+            // 3. NEW LOGIC: Check for Access Token (The "Call" Branch)
+            // ----------------------------------------------------------------
+            if (responseData && responseData.access_token) {
+                console.log("Token received, starting Retell Client...");
+                
+                // Initialize Retell Web Client (from the SDK added in <head>)
+                const retellWebClient = new RetellWebClient();
+
+                // Optional: Setup event listeners for debugging
+                retellWebClient.on("call_started", () => {
+                    console.log("Call started");
+                    callConfirmBtn.innerText = "Call in Progress...";
+                });
+                retellWebClient.on("call_ended", () => {
+                    console.log("Call ended");
+                    callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
+                    alert("Call finished. Thank you!");
+                });
+                retellWebClient.on("error", (error) => {
+                    console.error("Retell Error:", error);
+                    alert("Error during call connection.");
+                    callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
+                });
+
+                // Start the call using the token n8n gave us
+                await retellWebClient.startCall({
+                    accessToken: responseData.access_token
+                });
+
             } else {
-                // Catches errors like 404/500 if the n8n workflow failed to send a response
-                const errorText = await response.text();
-                console.error(`Submission failed. Status: ${response.status}`, errorText);
-                alert(`Submission Failed. Status: ${response.status}. Please check n8n logs.`);
+                // Normal Success (No token = The "Submit Only" Branch)
+                if (response.ok) {
+                    alert("Form submitted! We will contact you shortly via email.");
+                } else {
+                    alert(`Submission Failed. Status: ${response.status}`);
+                }
             }
 
         } catch (error) {
-            console.error('Network or Fetch Error submitting form:', error);
+            console.error('Network or Fetch Error:', error);
             alert("An unexpected network error occurred. Please try again.");
         } finally {
-            // Re-enable buttons regardless of outcome
+            // Reset buttons
             submitBtn.disabled = false;
             callConfirmBtn.disabled = false;
+            submitBtn.innerText = "Submit (Log Only)";
+            if(callConfirmBtn.innerText === "Connecting...") {
+                callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
+            }
         }
     }
 
