@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v5)</title>
-    <!-- 1. ADDED: Retell AI SDK for WebRTC calls -->
+    <title>Jason Chew AI Training Center (v6)</title>
+    
+    <!-- 1. FIXED: Added 'events' polyfill to prevent SDK crash -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/events/3.3.0/events.min.js"></script>
+    <!-- 2. Retell AI SDK -->
     <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
+    
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -88,7 +92,7 @@
     }
     
     // --------------------------------------------------------------------------------
-    // 2. UPDATED: Submission Function with Retell Logic
+    // UPDATED: Submission Function
     // --------------------------------------------------------------------------------
     async function sendFormData(data) {
         
@@ -103,45 +107,47 @@
         callConfirmBtn.disabled = true;
         
         // Change button text to show activity
-        const originalBtnText = data.formAction === 'Call To Confirm (AI Agent)' ? callConfirmBtn.innerText : submitBtn.innerText;
-        if(data.formAction === 'Call To Confirm (AI Agent)') callConfirmBtn.innerText = "Connecting...";
+        if(data.formAction.includes('Call')) callConfirmBtn.innerText = "Connecting...";
         else submitBtn.innerText = "Sending...";
 
         try {
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data), 
             });
 
-            // Parse the JSON response from n8n
             let responseData;
             try {
                 responseData = await response.json();
+                console.log("Raw Response from n8n:", responseData); // For debugging
             } catch (e) {
                 console.warn("Response was not JSON", e);
-                // If parsing fails but status is OK, treat as generic success
-                if (response.ok) {
-                    alert("Form submitted successfully! (No call token received)");
-                    return;
+            }
+
+            // 3. FIXED: Handle both Array (n8n default) and Object responses
+            let accessToken = null;
+            if (responseData) {
+                if (Array.isArray(responseData) && responseData.length > 0) {
+                    accessToken = responseData[0].access_token; // Handle Array
+                } else if (responseData.access_token) {
+                    accessToken = responseData.access_token; // Handle Object
                 }
             }
 
             // ----------------------------------------------------------------
-            // 3. NEW LOGIC: Check for Access Token (The "Call" Branch)
+            // Call Logic
             // ----------------------------------------------------------------
-            if (responseData && responseData.access_token) {
-                console.log("Token received, starting Retell Client...");
+            if (accessToken) {
+                console.log("Token received:", accessToken);
                 
-                // Initialize Retell Web Client (from the SDK added in <head>)
+                // Initialize Retell Web Client
+                // Note: The 'events' script added in <head> fixes the "EventEmitter" error
                 const retellWebClient = new RetellWebClient();
 
-                // Optional: Setup event listeners for debugging
                 retellWebClient.on("call_started", () => {
                     console.log("Call started");
-                    callConfirmBtn.innerText = "Call in Progress...";
+                    callConfirmBtn.innerText = "Speaking...";
                 });
                 retellWebClient.on("call_ended", () => {
                     console.log("Call ended");
@@ -150,17 +156,17 @@
                 });
                 retellWebClient.on("error", (error) => {
                     console.error("Retell Error:", error);
-                    alert("Error during call connection.");
+                    alert("Error connection: " + JSON.stringify(error));
                     callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
                 });
 
-                // Start the call using the token n8n gave us
+                // Start the call
                 await retellWebClient.startCall({
-                    accessToken: responseData.access_token
+                    accessToken: accessToken
                 });
 
             } else {
-                // Normal Success (No token = The "Submit Only" Branch)
+                // Normal Success (Log Only)
                 if (response.ok) {
                     alert("Form submitted! We will contact you shortly via email.");
                 } else {
@@ -176,7 +182,7 @@
             submitBtn.disabled = false;
             callConfirmBtn.disabled = false;
             submitBtn.innerText = "Submit (Log Only)";
-            if(callConfirmBtn.innerText === "Connecting...") {
+            if(callConfirmBtn.innerText === "Connecting..." || callConfirmBtn.innerText === "Speaking...") {
                 callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
             }
         }
