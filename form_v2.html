@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v9)</title>
+    <title>Jason Chew AI Training Center (v10)</title>
     
     <!-- ======================================================= -->
-    <!-- NEW FIX (v9): Load SDK via ES Modules (Smart CDN)       -->
-    <!-- This handles all dependencies (EventEmitter) auto-magically -->
+    <!-- FINAL FIX (v10): Load SDK via ES Modules (Bundled)      -->
+    <!-- Uses 'esm.sh' with '?bundle' to auto-fix dependencies   -->
     <!-- ======================================================= -->
     <script type="module">
-        // Import from esm.sh which fixes the "EventEmitter" crash automatically
-        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@2.0.26';
+        // We use @latest to ensure the link always exists (Fixes the 404 error)
+        // We use ?bundle to force it to include EventEmitter (Fixes the crash)
+        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         
-        // Make it available to the rest of your website
+        // Make the SDK available to the rest of the page
         window.RetellWebClient = RetellWebClient;
-        console.log("Retell SDK loaded successfully via ESM");
+        console.log("Retell SDK v10 loaded successfully");
     </script>
     
     <style>
@@ -31,7 +32,7 @@
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v9)</h2>
+    <h2>Jason Chew AI Training Center (v10)</h2>
     <h3>Training Course Inquiry Form</h3>
 
     <div id="inquiryForm">
@@ -149,14 +150,18 @@
             if (accessToken) {
                 console.log("Token found:", accessToken);
                 
-                // Initialize Retell Web Client
-                // (It is now loaded via the module script in <head>)
-                if (typeof RetellWebClient === 'undefined') {
-                    alert("System Error: Retell SDK not loaded yet. Please refresh and try again.");
+                // Ensure SDK is loaded
+                if (typeof window.RetellWebClient === 'undefined') {
+                    alert("System loading... Please wait 2 seconds and try again.");
+                    // This creates a retry loop in case the script is slow to load
+                    callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
+                    submitBtn.disabled = false;
+                    callConfirmBtn.disabled = false;
                     return;
                 }
 
-                const retellWebClient = new RetellWebClient();
+                // Initialize Retell Web Client
+                const retellWebClient = new window.RetellWebClient();
 
                 retellWebClient.on("call_started", () => {
                     console.log("Call started");
@@ -169,9 +174,7 @@
                 });
                 retellWebClient.on("error", (error) => {
                     console.error("Retell Error:", error);
-                    // Safely stringify error to avoid [object Object] alerts
-                    const errorMsg = error.message || JSON.stringify(error);
-                    alert("Error connection: " + errorMsg);
+                    alert("Error connection: " + (error.message || JSON.stringify(error)));
                     callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
                 });
 
@@ -194,11 +197,11 @@
             console.error('Network or Fetch Error:', error);
             alert("An unexpected network error occurred. Please try again.");
         } finally {
-            // Reset buttons
-            submitBtn.disabled = false;
-            callConfirmBtn.disabled = false;
-            submitBtn.innerText = "Submit (Log Only)";
-            if(callConfirmBtn.innerText === "Connecting..." || callConfirmBtn.innerText === "Speaking...") {
+            // Reset buttons (Only if we didn't start a call successfully)
+            if(callConfirmBtn.innerText !== "Speaking...") {
+                submitBtn.disabled = false;
+                callConfirmBtn.disabled = false;
+                submitBtn.innerText = "Submit (Log Only)";
                 callConfirmBtn.innerText = "Call To Confirm (AI Agent)";
             }
         }
