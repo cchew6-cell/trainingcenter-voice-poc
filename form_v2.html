@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (v6)</title>
+    <title>Jason Chew AI Training Center (v7)</title>
     
-    <!-- 1. FIXED: Added 'events' polyfill to prevent SDK crash -->
+    <!-- 1. CRITICAL FIX: Polyfills for Retell SDK -->
+    <script>
+        // Define global variables required by some Node.js-based SDKs
+        window.global = window;
+        window.process = { env: { NODE_DEBUG: false } };
+    </script>
+    <!-- Load the 'events' library before the SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/events/3.3.0/events.min.js"></script>
+    <script>
+        // Manually assign EventEmitter to window so Retell can find it
+        if (!window.EventEmitter) {
+            window.EventEmitter = window.events; 
+        }
+    </script>
+    
     <!-- 2. Retell AI SDK -->
     <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
     
@@ -23,7 +36,7 @@
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v6)</h2>
+    <h2>Jason Chew AI Training Center (v7)</h2>
     <h3>Training Course Inquiry Form</h3>
 
     <div id="inquiryForm">
@@ -120,18 +133,18 @@
             let responseData;
             try {
                 responseData = await response.json();
-                console.log("Raw Response from n8n:", responseData); // For debugging
+                console.log("Raw Response from n8n:", responseData); 
             } catch (e) {
                 console.warn("Response was not JSON", e);
             }
 
-            // 3. FIXED: Handle both Array (n8n default) and Object responses
+            // Handle Token Extraction (Supports both Array and Object formats)
             let accessToken = null;
             if (responseData) {
                 if (Array.isArray(responseData) && responseData.length > 0) {
-                    accessToken = responseData[0].access_token; // Handle Array
+                    accessToken = responseData[0].access_token; 
                 } else if (responseData.access_token) {
-                    accessToken = responseData.access_token; // Handle Object
+                    accessToken = responseData.access_token; 
                 }
             }
 
@@ -139,10 +152,9 @@
             // Call Logic
             // ----------------------------------------------------------------
             if (accessToken) {
-                console.log("Token received:", accessToken);
+                console.log("Token found:", accessToken);
                 
                 // Initialize Retell Web Client
-                // Note: The 'events' script added in <head> fixes the "EventEmitter" error
                 const retellWebClient = new RetellWebClient();
 
                 retellWebClient.on("call_started", () => {
@@ -166,7 +178,8 @@
                 });
 
             } else {
-                // Normal Success (Log Only)
+                // Normal Success (No token found)
+                console.log("No token found in response. Treating as log-only submission.");
                 if (response.ok) {
                     alert("Form submitted! We will contact you shortly via email.");
                 } else {
