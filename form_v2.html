@@ -6,30 +6,29 @@
     <title>Jason Chew AI Training Center (v8)</title>
     
     <!-- ======================================================= -->
-    <!-- CRITICAL FIX: Polyfills for Retell SDK (Node.js Emulation) -->
+    <!-- CRITICAL FIX: Robust Polyfills for Retell SDK (v8)      -->
     <!-- ======================================================= -->
     <script>
-        // 1. Define Node.js globals that the SDK expects
+        // 1. Define Node.js globals
         window.global = window;
-        window.process = { env: { NODE_DEBUG: false, NODE_ENV: 'production' } };
+        window.process = { env: { NODE_DEBUG: false, NODE_ENV: 'production' }, version: '' };
 
-        // 2. Manually define EventEmitter to prevent "undefined" errors
-        // This replaces the need for external 'events' scripts that were failing
+        // 2. Define a robust EventEmitter class
         class EventEmitter {
-            constructor() { this._events = {}; }
+            constructor() { this.events = {}; }
             on(event, listener) {
-                if (!this._events[event]) this._events[event] = [];
-                this._events[event].push(listener);
+                if (!this.events[event]) this.events[event] = [];
+                this.events[event].push(listener);
                 return this;
             }
             removeListener(event, listener) {
-                if (!this._events[event]) return this;
-                this._events[event] = this._events[event].filter(l => l !== listener);
+                if (!this.events[event]) return this;
+                this.events[event] = this.events[event].filter(l => l !== listener);
                 return this;
             }
             emit(event, ...args) {
-                if (!this._events[event]) return false;
-                this._events[event].forEach(l => l.apply(this, args));
+                if (!this.events[event]) return false;
+                this.events[event].forEach(l => l.apply(this, args));
                 return true;
             }
             once(event, listener) {
@@ -40,15 +39,22 @@
                 this.on(event, remove);
                 return this;
             }
+            off(event, listener) { return this.removeListener(event, listener); }
+            addListener(event, listener) { return this.on(event, listener); }
+            setMaxListeners(n) { return this; } // Stub for compatibility
         }
-        
-        // 3. Expose it globally
+
+        // 3. EXPOSE TO ALL POSSIBLE PATHS (The "Triple Check" Fix)
+        // Some SDKs look for 'EventEmitter' globally
         window.EventEmitter = EventEmitter;
-        window.events = { EventEmitter: EventEmitter }; 
+        // Some look for a module named 'events' that IS the class
+        window.events = EventEmitter;
+        // Some look for a module named 'events' that HAS a property 'EventEmitter'
+        window.events.EventEmitter = EventEmitter; 
     </script>
     
     <!-- ======================================================= -->
-    <!-- LOAD RETELL SDK (Must be after the polyfills) -->
+    <!-- LOAD RETELL SDK (Must load AFTER the script above)      -->
     <!-- ======================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
     
@@ -162,7 +168,7 @@
             let responseData;
             try {
                 responseData = await response.json();
-                console.log("Raw Response from n8n:", responseData); // For Debugging
+                console.log("Raw Response from n8n:", responseData); 
             } catch (e) {
                 console.warn("Response was not JSON", e);
             }
@@ -171,9 +177,9 @@
             let accessToken = null;
             if (responseData) {
                 if (Array.isArray(responseData) && responseData.length > 0) {
-                    accessToken = responseData[0].access_token; // Handle Array
+                    accessToken = responseData[0].access_token; 
                 } else if (responseData.access_token) {
-                    accessToken = responseData.access_token; // Handle Object
+                    accessToken = responseData.access_token; 
                 }
             }
 
