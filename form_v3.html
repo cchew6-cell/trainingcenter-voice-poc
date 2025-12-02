@@ -39,13 +39,14 @@
         .profile-img {
             width: 60px;
             height: 60px;
-            border-radius: 50%; /* Circular Image */
+            border-radius: 50%;
             object-fit: cover;
             border: 2px solid #4CAF50;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #eee; /* Fallback color if image missing */
         }
 
-        /* LANGUAGE SWITCHER (EN MY 中文) */
+        /* LANGUAGE SWITCHER */
         .lang-switcher {
             font-size: 18px;
             font-weight: bold;
@@ -59,7 +60,7 @@
         }
 
         .lang-option:hover { color: #000; }
-        .lang-option.active { color: #d32f2f; text-decoration: underline; } /* Active Language Red */
+        .lang-option.active { color: #d32f2f; text-decoration: underline; } 
 
         /* FORM STYLES */
         .form-group { margin-bottom: 15px; }
@@ -107,8 +108,11 @@
                 <h1 id="mainTitle">Jason Chew's AI Classroom</h1>
                 <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
             </div>
-            <!-- PLEASE UPLOAD YOUR IMAGE NAMED 'header-image.png' TO GITHUB -->
-            <img src="header-image.png" alt="Jason Chew" class="profile-img">
+            <!-- FIX 1: Added a default online avatar so it works immediately. 
+                 Once you upload 'header-image.png' to GitHub, you can change the src back. -->
+            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" 
+                 onerror="this.src='header-image.png'" 
+                 alt="Jason Chew" class="profile-img">
         </div>
 
         <div class="lang-switcher">
@@ -139,10 +143,11 @@
         <div class="form-group">
             <label for="budget" id="lbl_budget">Budget *</label>
             <select id="budget" name="budget" required>
-                <option value="" disabled selected>Select an option...</option>
-                <option value="Below RM 4,000">Below RM 4,000</option>
-                <option value="RM 4,000 to RM 7,000">RM 4,000 to RM 7,000</option>
-                <option value="RM 7,000 to RM 11,000">RM 7,000 to RM 11,000</option>
+                <!-- FIX 2: Added IDs to options so we can translate them -->
+                <option value="" disabled selected id="opt_default">Select an option...</option>
+                <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
+                <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
+                <option value="RM 7,000 to RM 11,000" id="opt_3">RM 7,000 to RM 11,000</option>
             </select>
         </div>
 
@@ -157,7 +162,9 @@
         </div>
 
         <div class="contact-info">
-            Contact: <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a>
+            <!-- FIX 3: Added ID to Contact Label for translation -->
+            <span id="lbl_contact">Contact:</span> 
+            <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a>
         </div>
     </div>
 
@@ -168,13 +175,13 @@
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/e7e8bb21-688c-4e14-849b-28ccca7a2ad7"; 
 
     const AGENT_MAPPING = {
-        'english': 'YOUR_ENGLISH_AGENT_ID', 
-        'malay':   'YOUR_MALAY_AGENT_ID',    
-        'chinese': 'YOUR_CHINESE_AGENT_ID'   
+        'english': 'YOUR_ENGLISH_AGENT_ID',  // PASTE ID HERE
+        'malay':   'YOUR_MALAY_AGENT_ID',    // PASTE ID HERE
+        'chinese': 'YOUR_CHINESE_AGENT_ID'   // PASTE ID HERE
     };
 
     // --------------------------------------------------------------------------------
-    // 2. TRANSLATION DICTIONARY
+    // 2. TRANSLATION DICTIONARY (Updated with Dropdown & Contact)
     // --------------------------------------------------------------------------------
     const translations = {
         english: {
@@ -186,7 +193,13 @@
             lbl_budget: "Budget *",
             lbl_req: "Please describe your training course requirement *",
             submitBtn: "Submit (Log Only)",
-            callConfirmBtn: "Speak To AI Agent"
+            callConfirmBtn: "Speak To AI Agent",
+            lbl_contact: "Contact:",
+            // Dropdown Options
+            opt_default: "Select an option...",
+            opt_1: "Below RM 4,000",
+            opt_2: "RM 4,000 to RM 7,000",
+            opt_3: "RM 7,000 to RM 11,000"
         },
         malay: {
             mainTitle: "Kelas AI Jason Chew",
@@ -197,10 +210,16 @@
             lbl_budget: "Bajet *",
             lbl_req: "Sila terangkan keperluan kursus latihan anda *",
             submitBtn: "Hantar (Log Sahaja)",
-            callConfirmBtn: "Cakap dengan AI Agent"
+            callConfirmBtn: "Cakap dengan AI Agent",
+            lbl_contact: "Hubungi:",
+            // Dropdown Options
+            opt_default: "Sila pilih satu...",
+            opt_1: "Bawah RM 4,000",
+            opt_2: "RM 4,000 hingga RM 7,000",
+            opt_3: "RM 7,000 hingga RM 11,000"
         },
         chinese: {
-            mainTitle: "Jason Chew AI 智慧教室",
+            mainTitle: "Jason Chew的AI智慧教室",
             subTitle: "培训课程咨询表",
             lbl_name: "姓名 *",
             lbl_email: "电子邮箱 *",
@@ -208,7 +227,13 @@
             lbl_budget: "预算 *",
             lbl_req: "请描述您的培训课程需求 *",
             submitBtn: "提交 (仅记录)",
-            callConfirmBtn: "与 AI Agent 通话"
+            callConfirmBtn: "与 AI Agent 通话",
+            lbl_contact: "联系方式:",
+            // Dropdown Options
+            opt_default: "请选择...",
+            opt_1: "RM 4,000 以下",
+            opt_2: "RM 4,000 至 RM 7,000",
+            opt_3: "RM 7,000 至 RM 11,000"
         }
     };
 
@@ -216,12 +241,12 @@
     let currentLang = 'english';
 
     // --------------------------------------------------------------------------------
-    // 3. UI LOGIC: LANGUAGE SWITCHING
+    // 3. UI LOGIC: LANGUAGE SWITCHING (Updated)
     // --------------------------------------------------------------------------------
     function setLanguage(lang) {
         currentLang = lang; // Update Global State
 
-        // Update UI Text
+        // Update Labels & Buttons
         const t = translations[lang];
         document.getElementById('mainTitle').innerText = t.mainTitle;
         document.getElementById('subTitle').innerText = t.subTitle;
@@ -230,6 +255,13 @@
         document.getElementById('lbl_mobile').innerText = t.lbl_mobile;
         document.getElementById('lbl_budget').innerText = t.lbl_budget;
         document.getElementById('lbl_req').innerText = t.lbl_req;
+        document.getElementById('lbl_contact').innerText = t.lbl_contact;
+
+        // Update Dropdown Options
+        document.getElementById('opt_default').innerText = t.opt_default;
+        document.getElementById('opt_1').innerText = t.opt_1;
+        document.getElementById('opt_2').innerText = t.opt_2;
+        document.getElementById('opt_3').innerText = t.opt_3;
         
         // Update Buttons (Only if not currently active/loading)
         const sBtn = document.getElementById('submitBtn');
@@ -248,7 +280,6 @@
     // 4. DATA GATHERING
     // --------------------------------------------------------------------------------
     function getFormData(actionType) {
-        // Automatically pick Agent ID based on currentLang
         const selectedAgentId = AGENT_MAPPING[currentLang];
 
         return {
@@ -259,15 +290,13 @@
             budget: document.getElementById('budget').value,
             requirements: document.getElementById('requirements').value,
             formAction: actionType, 
-            
-            // Critical Data for n8n
             chosen_agent_id: selectedAgentId,
             language_preference: currentLang
         };
     }
     
     // --------------------------------------------------------------------------------
-    // 5. SUBMISSION & CALL LOGIC
+    // 5. SUBMISSION & CALL LOGIC (Same as before)
     // --------------------------------------------------------------------------------
     async function sendFormData(data) {
         if (!data.name || !data.email || !data.requirements || !data.budget) {
@@ -278,11 +307,9 @@
         const sBtn = document.getElementById('submitBtn');
         const cBtn = document.getElementById('callConfirmBtn');
         
-        // Lock UI
         sBtn.disabled = true;
         cBtn.disabled = true;
         
-        // Loading Text
         if(data.formAction.includes('Call')) cBtn.innerText = "Connecting...";
         else sBtn.innerText = "Sending...";
 
@@ -294,8 +321,6 @@
             });
 
             let responseData = await response.json().catch(() => ({}));
-            
-            // Get Token
             let accessToken = null;
             if (Array.isArray(responseData) && responseData.length > 0) {
                 accessToken = responseData[0].access_token; 
@@ -303,16 +328,13 @@
                 accessToken = responseData.access_token; 
             }
 
-            // Start Call if Token exists
             if (accessToken) {
                 if (typeof window.RetellWebClient === 'undefined') {
                     alert("SDK Loading... try again in 2 seconds.");
                     resetButtons();
                     return;
                 }
-
                 const retellWebClient = new window.RetellWebClient();
-
                 retellWebClient.on("call_started", () => {
                     cBtn.innerText = "Speaking...";
                 });
@@ -325,16 +347,13 @@
                     alert("Connection Error.");
                     resetButtons();
                 });
-
                 await retellWebClient.startCall({ accessToken: accessToken });
 
             } else {
-                // Submit Only Logic
                 if (response.ok) alert("Submitted successfully!");
                 else alert("Submission failed.");
                 resetButtons();
             }
-
         } catch (error) {
             console.error(error);
             alert("Network Error.");
@@ -345,7 +364,7 @@
     function resetButtons() {
         const sBtn = document.getElementById('submitBtn');
         const cBtn = document.getElementById('callConfirmBtn');
-        const t = translations[currentLang]; // Reset to current language text
+        const t = translations[currentLang];
         
         sBtn.disabled = false;
         cBtn.disabled = false;
