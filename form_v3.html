@@ -3,113 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew AI Training Center (Multilingual) v1 </title>
+    <title>Jason Chew's AI Classroom</title>
     
-    <!-- ======================================================= -->
-    <!-- FINAL FIX (v10): Load SDK via ES Modules (Bundled)      -->
-    <!-- Uses 'esm.sh' with '?bundle' to auto-fix dependencies   -->
-    <!-- ======================================================= -->
+    <!-- Retell SDK -->
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
-        console.log("Retell SDK v10 loaded successfully");
     </script>
     
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], input[type="email"], input[type="tel"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; box-sizing: border-box; border-radius: 4px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; }
         
-        /* Button Container Styling */
+        /* HEADER LAYOUT */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-section h1 {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.2;
+        }
+
+        .profile-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%; /* Circular Image */
+            object-fit: cover;
+            border: 2px solid #4CAF50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* LANGUAGE SWITCHER (EN MY 中文) */
+        .lang-switcher {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .lang-option {
+            padding: 0 5px;
+            transition: color 0.3s;
+        }
+
+        .lang-option:hover { color: #000; }
+        .lang-option.active { color: #d32f2f; text-decoration: underline; } /* Active Language Red */
+
+        /* FORM STYLES */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; 
+            border: 1px solid #ccc; border-radius: 6px; 
+            box-sizing: border-box; font-size: 14px;
+        }
+        
         .class-button-group {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+            gap: 15px;
+            margin-top: 25px;
         }
 
-        button { padding: 12px 20px; cursor: pointer; border: none; color: white; border-radius: 5px; font-size: 16px; font-weight: bold; }
+        button { 
+            flex: 1; 
+            padding: 12px; 
+            cursor: pointer; 
+            border: none; 
+            color: white; 
+            border-radius: 6px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            transition: background 0.3s;
+        }
         
-        #submitBtn { background-color: #4CAF50; width: 100%; } /* Green */
+        #submitBtn { background-color: #4CAF50; } 
         #submitBtn:hover { background-color: #45a049; }
 
-        /* The Call Button Wrapper */
-        .call-section {
-            background-color: #fff5f5;
-            padding: 15px;
-            border: 1px solid #ffcdd2;
-            border-radius: 8px;
-        }
-
-        #languageSelect {
-            margin-bottom: 10px;
-            border: 2px solid #f44336;
-            color: #d32f2f;
-            font-weight: bold;
-        }
-
-        #callConfirmBtn { background-color: #f44336; width: 100%; } /* Red */
+        #callConfirmBtn { background-color: #f44336; } 
         #callConfirmBtn:hover { background-color: #d32f2f; }
         #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
 
-        .contact-info { margin-top: 20px; font-size: 0.9em; text-align: center; color: #666; }
+        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h2>Jason Chew AI Training Center (v1)</h2>
-    <h3>Training Course Inquiry Form</h3>
+    <!-- HEADER SECTION -->
+    <div class="header-container">
+        <div class="brand-section">
+            <div class="titles">
+                <h1 id="mainTitle">Jason Chew's AI Classroom</h1>
+                <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
+            </div>
+            <!-- PLEASE UPLOAD YOUR IMAGE NAMED 'header-image.png' TO GITHUB -->
+            <img src="header-image.png" alt="Jason Chew" class="profile-img">
+        </div>
 
+        <div class="lang-switcher">
+            <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
+            <span class="lang-option" onclick="setLanguage('malay')" id="langMY">MY</span>
+            <span class="lang-option" onclick="setLanguage('chinese')" id="langCN">中文</span>
+        </div>
+    </div>
+
+    <!-- FORM SECTION -->
     <div id="inquiryForm">
         
         <div class="form-group">
-            <label for="name">Name *</label>
-            <input type="text" id="name" required placeholder="Your Name">
+            <label for="name" id="lbl_name">Name *</label>
+            <input type="text" id="name" required>
         </div>
 
         <div class="form-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" required placeholder="email@example.com">
+            <label for="email" id="lbl_email">Email *</label>
+            <input type="email" id="email" required>
         </div>
 
         <div class="form-group">
-            <label for="mobile">Mobile Phone Number (+60123456789) *</label>
-            <input type="tel" id="mobile" required placeholder="+6012...">
+            <label for="mobile" id="lbl_mobile">Mobile Phone Number *</label>
+            <input type="tel" id="mobile" required placeholder="+60123456789">
         </div>
         
         <div class="form-group">
-         <label for="budget">Budget *</label>
-        <select id="budget" name="budget" required>
-            <option value="" disabled selected>Select an option...</option>
-            <option value="Below RM 4,000">Below RM 4,000</option>
-            <option value="RM 4,000 to RM 7,000">RM 4,000 to RM 7,000</option>
-            <option value="RM 7,000 to RM 11,000">RM 7,000 to RM 11,000</option>
-        </select>
-       </div>
-
-        <div class="form-group">
-            <label for="requirements">Please describe your training course requirement *</label>
-            <textarea id="requirements" rows="4" required placeholder="I want to learn AI..."></textarea>
+            <label for="budget" id="lbl_budget">Budget *</label>
+            <select id="budget" name="budget" required>
+                <option value="" disabled selected>Select an option...</option>
+                <option value="Below RM 4,000">Below RM 4,000</option>
+                <option value="RM 4,000 to RM 7,000">RM 4,000 to RM 7,000</option>
+                <option value="RM 7,000 to RM 11,000">RM 7,000 to RM 11,000</option>
+            </select>
         </div>
 
-        <!-- BUTTON GROUP -->
+        <div class="form-group">
+            <label for="requirements" id="lbl_req">Please describe your training course requirement *</label>
+            <textarea id="requirements" rows="4" required></textarea>
+        </div>
+
         <div class="class-button-group">
-            <!-- 1. Submit Only Button -->
             <button type="button" id="submitBtn">Submit (Log Only)</button>
-            
-            <!-- 2. AI Call Section with Language Dropdown -->
-            <div class="call-section">
-                <label for="languageSelect" style="color: #d32f2f;">Select Language to Call:</label>
-                <select id="languageSelect" onchange="updateButtonText()">
-                    <option value="english" selected>🇬🇧 English Agent</option>
-                    <option value="malay">🇲🇾 Bahasa Melayu Agent</option>
-                    <option value="chinese">🇨🇳 中文 Agent</option>
-                </select>
-                <button type="button" id="callConfirmBtn">Speak To AI Agent</button>
-            </div>
+            <button type="button" id="callConfirmBtn">Speak To AI Agent</button>
         </div>
 
         <div class="contact-info">
@@ -119,43 +163,93 @@
 
 <script>
     // --------------------------------------------------------------------------------
-    // CONFIGURATION: PASTE YOUR 3 RETELL AGENT IDs HERE
+    // 1. CONFIGURATION: PASTE AGENT IDs HERE
     // --------------------------------------------------------------------------------
-    const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/5b1da6f1-1109-432e-ac32-828c140222ea"; 
+    const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/e7e8bb21-688c-4e14-849b-28ccca7a2ad7"; 
 
     const AGENT_MAPPING = {
-        'english': 'agent_82cd6100568f17104e22a328a1',  // <-- Paste English Agent ID
-        'malay':   'agent_b4a0a496d33f415009f6cfe4e7',    // <-- Paste Malay Agent ID
-        'chinese': 'agent_327c54c1b151658e6c5ebf18e2'   // <-- Paste Chinese Agent ID
+        'english': 'YOUR_ENGLISH_AGENT_ID', 
+        'malay':   'YOUR_MALAY_AGENT_ID',    
+        'chinese': 'YOUR_CHINESE_AGENT_ID'   
     };
 
     // --------------------------------------------------------------------------------
-    // UI Logic: Change Button Text based on Dropdown
+    // 2. TRANSLATION DICTIONARY
     // --------------------------------------------------------------------------------
-    const languageSelect = document.getElementById('languageSelect');
-    const callConfirmBtn = document.getElementById('callConfirmBtn');
-    const submitBtn = document.getElementById('submitBtn');
-
-    function updateButtonText() {
-        const lang = languageSelect.value;
-        if (lang === 'english') {
-            callConfirmBtn.innerText = "Speak To AI Agent";
-        } else if (lang === 'malay') {
-            callConfirmBtn.innerText = "Cakap dengan AI Agent";
-        } else if (lang === 'chinese') {
-            callConfirmBtn.innerText = "与 AI Agent 通话";
+    const translations = {
+        english: {
+            mainTitle: "Jason Chew's AI Classroom",
+            subTitle: "Training Course Inquiry Form",
+            lbl_name: "Name *",
+            lbl_email: "Email *",
+            lbl_mobile: "Mobile Phone Number *",
+            lbl_budget: "Budget *",
+            lbl_req: "Please describe your training course requirement *",
+            submitBtn: "Submit (Log Only)",
+            callConfirmBtn: "Speak To AI Agent"
+        },
+        malay: {
+            mainTitle: "Kelas AI Jason Chew",
+            subTitle: "Borang Pertanyaan Kursus Latihan",
+            lbl_name: "Nama *",
+            lbl_email: "E-mel *",
+            lbl_mobile: "Nombor Telefon Bimbit *",
+            lbl_budget: "Bajet *",
+            lbl_req: "Sila terangkan keperluan kursus latihan anda *",
+            submitBtn: "Hantar (Log Sahaja)",
+            callConfirmBtn: "Cakap dengan AI Agent"
+        },
+        chinese: {
+            mainTitle: "Jason Chew AI 教室",
+            subTitle: "培训课程咨询表",
+            lbl_name: "姓名 *",
+            lbl_email: "电子邮箱 *",
+            lbl_mobile: "手机号码 *",
+            lbl_budget: "预算 *",
+            lbl_req: "请描述您的培训课程需求 *",
+            submitBtn: "提交 (仅记录)",
+            callConfirmBtn: "与 AI Agent 通话"
         }
+    };
+
+    // Current State
+    let currentLang = 'english';
+
+    // --------------------------------------------------------------------------------
+    // 3. UI LOGIC: LANGUAGE SWITCHING
+    // --------------------------------------------------------------------------------
+    function setLanguage(lang) {
+        currentLang = lang; // Update Global State
+
+        // Update UI Text
+        const t = translations[lang];
+        document.getElementById('mainTitle').innerText = t.mainTitle;
+        document.getElementById('subTitle').innerText = t.subTitle;
+        document.getElementById('lbl_name').innerText = t.lbl_name;
+        document.getElementById('lbl_email').innerText = t.lbl_email;
+        document.getElementById('lbl_mobile').innerText = t.lbl_mobile;
+        document.getElementById('lbl_budget').innerText = t.lbl_budget;
+        document.getElementById('lbl_req').innerText = t.lbl_req;
+        
+        // Update Buttons (Only if not currently active/loading)
+        const sBtn = document.getElementById('submitBtn');
+        const cBtn = document.getElementById('callConfirmBtn');
+        if(!sBtn.disabled) sBtn.innerText = t.submitBtn;
+        if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
+
+        // Highlight Active Link
+        document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
+        if(lang === 'english') document.getElementById('langEN').classList.add('active');
+        if(lang === 'malay') document.getElementById('langMY').classList.add('active');
+        if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
     }
 
     // --------------------------------------------------------------------------------
-    // Data Gathering
+    // 4. DATA GATHERING
     // --------------------------------------------------------------------------------
     function getFormData(actionType) {
-        // Get selected language key (english/malay/chinese)
-        const selectedLangKey = languageSelect.value;
-        
-        // Pick the correct Agent ID based on the mapping
-        const selectedAgentId = AGENT_MAPPING[selectedLangKey];
+        // Automatically pick Agent ID based on currentLang
+        const selectedAgentId = AGENT_MAPPING[currentLang];
 
         return {
             timestamp: new Date().toISOString(),
@@ -166,130 +260,102 @@
             requirements: document.getElementById('requirements').value,
             formAction: actionType, 
             
-            // Send the specific Agent ID to n8n
+            // Critical Data for n8n
             chosen_agent_id: selectedAgentId,
-            language_preference: selectedLangKey
+            language_preference: currentLang
         };
     }
     
     // --------------------------------------------------------------------------------
-    // Main Submission Function
+    // 5. SUBMISSION & CALL LOGIC
     // --------------------------------------------------------------------------------
     async function sendFormData(data) {
-        
-        // Basic validation
         if (!data.name || !data.email || !data.requirements || !data.budget) {
              alert("Please fill out all required fields.");
              return;
         }
 
-        // Lock buttons
-        submitBtn.disabled = true;
-        callConfirmBtn.disabled = true;
-        const originalButtonText = callConfirmBtn.innerText;
+        const sBtn = document.getElementById('submitBtn');
+        const cBtn = document.getElementById('callConfirmBtn');
         
-        // Update Status Text
-        if(data.formAction.includes('Call')) {
-            callConfirmBtn.innerText = "Connecting / Sedang Menyambung...";
-        } else {
-            submitBtn.innerText = "Sending...";
-        }
+        // Lock UI
+        sBtn.disabled = true;
+        cBtn.disabled = true;
+        
+        // Loading Text
+        if(data.formAction.includes('Call')) cBtn.innerText = "Connecting...";
+        else sBtn.innerText = "Sending...";
 
         try {
-            console.log("Sending Data to n8n:", data); // Debugging
-
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data), 
             });
 
-            let responseData;
-            try {
-                responseData = await response.json();
-                console.log("Raw Response from n8n:", responseData); 
-            } catch (e) {
-                console.warn("Response was not JSON", e);
-            }
-
-            // Extract Access Token
+            let responseData = await response.json().catch(() => ({}));
+            
+            // Get Token
             let accessToken = null;
-            if (responseData) {
-                if (Array.isArray(responseData) && responseData.length > 0) {
-                    accessToken = responseData[0].access_token; 
-                } else if (responseData.access_token) {
-                    accessToken = responseData.access_token; 
-                }
+            if (Array.isArray(responseData) && responseData.length > 0) {
+                accessToken = responseData[0].access_token; 
+            } else if (responseData.access_token) {
+                accessToken = responseData.access_token; 
             }
 
-            // ----------------------------------------------------------------
-            // WebRTC Call Logic
-            // ----------------------------------------------------------------
+            // Start Call if Token exists
             if (accessToken) {
-                console.log("Token found for Agent:", data.chosen_agent_id);
-                
-                // Ensure SDK is loaded
                 if (typeof window.RetellWebClient === 'undefined') {
-                    alert("System loading SDK... Please wait 2 seconds and try again.");
-                    // Reset UI
-                    callConfirmBtn.innerText = originalButtonText;
-                    submitBtn.disabled = false;
-                    callConfirmBtn.disabled = false;
+                    alert("SDK Loading... try again in 2 seconds.");
+                    resetButtons();
                     return;
                 }
 
-                // Initialize Retell Web Client
                 const retellWebClient = new window.RetellWebClient();
 
                 retellWebClient.on("call_started", () => {
-                    console.log("Call started");
-                    callConfirmBtn.innerText = "Speaking / Sedang Bercakap...";
+                    cBtn.innerText = "Speaking...";
                 });
                 retellWebClient.on("call_ended", () => {
-                    console.log("Call ended");
-                    callConfirmBtn.innerText = originalButtonText;
+                    resetButtons();
                     alert("Call finished. Thank you!");
                 });
                 retellWebClient.on("error", (error) => {
                     console.error("Retell Error:", error);
-                    alert("Error connection: " + (error.message || JSON.stringify(error)));
-                    callConfirmBtn.innerText = originalButtonText;
+                    alert("Connection Error.");
+                    resetButtons();
                 });
 
-                // Start the call using the specific token from n8n
-                await retellWebClient.startCall({
-                    accessToken: accessToken
-                });
+                await retellWebClient.startCall({ accessToken: accessToken });
 
             } else {
-                // Submit Log Only Success
-                console.log("No token found. Normal submission.");
-                if (response.ok) {
-                    alert("Form submitted! We will contact you shortly.");
-                } else {
-                    alert(`Submission Failed. Status: ${response.status}`);
-                }
+                // Submit Only Logic
+                if (response.ok) alert("Submitted successfully!");
+                else alert("Submission failed.");
+                resetButtons();
             }
 
         } catch (error) {
-            console.error('Network or Fetch Error:', error);
-            alert("An unexpected network error occurred. Please try again.");
-        } finally {
-            // Reset buttons if call didn't start (e.g., Submit Only mode or Error)
-            if(callConfirmBtn.innerText.includes("Connecting") || submitBtn.innerText === "Sending...") {
-                submitBtn.disabled = false;
-                callConfirmBtn.disabled = false;
-                submitBtn.innerText = "Submit (Log Only)";
-                callConfirmBtn.innerText = originalButtonText;
-            }
+            console.error(error);
+            alert("Network Error.");
+            resetButtons();
         }
     }
 
-    // --- Event Listeners ---
-    submitBtn.addEventListener('click', () => sendFormData(getFormData('Submit (Log Only)')));
-    
-    // Call button sends "Call To Confirm" action
-    callConfirmBtn.addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
+    function resetButtons() {
+        const sBtn = document.getElementById('submitBtn');
+        const cBtn = document.getElementById('callConfirmBtn');
+        const t = translations[currentLang]; // Reset to current language text
+        
+        sBtn.disabled = false;
+        cBtn.disabled = false;
+        sBtn.innerText = t.submitBtn;
+        cBtn.innerText = t.callConfirmBtn;
+    }
+
+    // Event Listeners
+    document.getElementById('submitBtn').addEventListener('click', () => sendFormData(getFormData('Submit (Log Only)')));
+    document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
 
 </script>
 </body>
