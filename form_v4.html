@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jason Chew's AI Classroom</title>
+    
+    <!-- Retell SDK (Bundled Version for Stability) -->
+    <script type="module">
+        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
+        window.RetellWebClient = RetellWebClient;
+    </script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; }
+        
+        /* HEADER LAYOUT */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-section h1 {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.2;
+        }
+
+        .profile-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4CAF50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #eee;
+        }
+
+        /* LANGUAGE SWITCHER */
+        .lang-switcher {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .lang-option {
+            padding: 0 5px;
+            transition: color 0.3s;
+        }
+
+        .lang-option:hover { color: #000; }
+        .lang-option.active { color: #d32f2f; text-decoration: underline; } 
+
+        /* FORM STYLES */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; 
+            border: 1px solid #ccc; border-radius: 6px; 
+            box-sizing: border-box; font-size: 14px;
+        }
+        
+        .class-button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        /* Call Button Styling (Full Width) */
+        button { 
+            width: 100%; /* Changed to full width since it's the only button */
+            padding: 15px; /* Slightly larger for emphasis */
+            cursor: pointer; 
+            border: none; 
+            color: white; 
+            border-radius: 6px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            transition: background 0.3s;
+        }
+        
+        #callConfirmBtn { background-color: #f44336; } 
+        #callConfirmBtn:hover { background-color: #d32f2f; }
+        #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
+
+        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER SECTION -->
+    <div class="header-container">
+        <div class="brand-section">
+            <div class="titles">
+                <h1 id="mainTitle">Jason Chew's AI Classroom</h1>
+                <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
+            </div>
+            <!-- Header Image -->
+            <img src="header-image.png" onerror="this.style.display='none'" alt="Jason Chew" class="profile-img"> 
+        </div>
+
+        <div class="lang-switcher">
+            <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
+            <span class="lang-option" onclick="setLanguage('malay')" id="langMY">MY</span>
+            <span class="lang-option" onclick="setLanguage('chinese')" id="langCN">中文</span>
+        </div>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div id="inquiryForm">
+        
+        <div class="form-group">
+            <label for="name" id="lbl_name">Name *</label>
+            <input type="text" id="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email" id="lbl_email">Email *</label>
+            <input type="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mobile" id="lbl_mobile">Mobile Phone Number *</label>
+            <input type="tel" id="mobile" required placeholder="+60123456789">
+        </div>
+        
+        <div class="form-group">
+            <label for="budget" id="lbl_budget">Budget *</label>
+            <select id="budget" name="budget" required>
+                <option value="" disabled selected id="opt_default">Select an option...</option>
+                <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
+                <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
+                <option value="RM 7,000 to RM 11,000" id="opt_3">RM 7,000 to RM 11,000</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="requirements" id="lbl_req">Please describe your training course requirement *</label>
+            <textarea id="requirements" rows="4" required></textarea>
+        </div>
+
+        <div class="class-button-group">
+            <!-- ONLY ONE BUTTON NOW -->
+            <button type="button" id="callConfirmBtn">Speak To AI Agent</button>
+        </div>
+
+        <div class="contact-info">
+            <span id="lbl_contact">Contact:</span> 
+            <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a>
+        </div>
+    </div>
+
+    <!-- AUDIO PLAYER -->
+    <audio id="ringtonePlayer" loop>
+        <source src="ring.mp3" type="audio/mpeg">
+        <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
+    </audio>
+
+<script>
+    // --------------------------------------------------------------------------------
+    // 1. CONFIGURATION
+    // --------------------------------------------------------------------------------
+    const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/5b1da6f1-1109-432e-ac32-828c140222ea"; 
+
+    const AGENT_MAPPING = {
+        'english': 'agent_82cd6100568f17104e22a328a1', 
+        'malay':   'agent_b4a0a496d33f415009f6cfe4e7',    
+        'chinese': 'agent_327c54c1b151658e6c5ebf18e2'   
+    };
+
+    // --------------------------------------------------------------------------------
+    // 2. TRANSLATION DICTIONARY
+    // --------------------------------------------------------------------------------
+    const translations = {
+        english: {
+            mainTitle: "Jason Chew's AI Classroom",
+            subTitle: "Training Course Inquiry Form",
+            lbl_name: "Name *",
+            lbl_email: "Email *",
+            lbl_mobile: "Mobile Phone Number *",
+            lbl_budget: "Budget *",
+            lbl_req: "Please describe your training course requirement *",
+            callConfirmBtn: "Speak To AI Agent",
+            lbl_contact: "Contact:",
+            opt_default: "Select an option...",
+            opt_1: "Below RM 4,000",
+            opt_2: "RM 4,000 to RM 7,000",
+            opt_3: "RM 7,000 to RM 11,000"
+        },
+        malay: {
+            mainTitle: "Kelas AI Jason Chew",
+            subTitle: "Borang Pertanyaan Kursus Latihan",
+            lbl_name: "Nama *",
+            lbl_email: "E-mel *",
+            lbl_mobile: "Nombor Telefon Bimbit *",
+            lbl_budget: "Bajet *",
+            lbl_req: "Sila terangkan keperluan kursus latihan anda *",
+            callConfirmBtn: "Cakap dengan AI Agent",
+            lbl_contact: "Hubungi:",
+            opt_default: "Sila pilih satu...",
+            opt_1: "Bawah RM 4,000",
+            opt_2: "RM 4,000 hingga RM 7,000",
+            opt_3: "RM 7,000 hingga RM 11,000"
+        },
+        chinese: {
+            mainTitle: "Jason Chew的AI智慧教室",
+            subTitle: "培训课程咨询表",
+            lbl_name: "姓名 *",
+            lbl_email: "电子邮箱 *",
+            lbl_mobile: "手机号码 *",
+            lbl_budget: "预算 *",
+            lbl_req: "请描述您的培训课程需求 *",
+            callConfirmBtn: "与 AI Agent 通话",
+            lbl_contact: "联系方式:",
+            opt_default: "请选择...",
+            opt_1: "RM 4,000 以下",
+            opt_2: "RM 4,000 至 RM 7,000",
+            opt_3: "RM 7,000 至 RM 11,000"
+        }
+    };
+
+    let currentLang = 'english';
+
+    // --------------------------------------------------------------------------------
+    // 3. UI LOGIC
+    // --------------------------------------------------------------------------------
+    function setLanguage(lang) {
+        currentLang = lang;
+        const t = translations[lang];
+        document.getElementById('mainTitle').innerText = t.mainTitle;
+        document.getElementById('subTitle').innerText = t.subTitle;
+        document.getElementById('lbl_name').innerText = t.lbl_name;
+        document.getElementById('lbl_email').innerText = t.lbl_email;
+        document.getElementById('lbl_mobile').innerText = t.lbl_mobile;
+        document.getElementById('lbl_budget').innerText = t.lbl_budget;
+        document.getElementById('lbl_req').innerText = t.lbl_req;
+        document.getElementById('lbl_contact').innerText = t.lbl_contact;
+        document.getElementById('opt_default').innerText = t.opt_default;
+        document.getElementById('opt_1').innerText = t.opt_1;
+        document.getElementById('opt_2').innerText = t.opt_2;
+        document.getElementById('opt_3').innerText = t.opt_3;
+        
+        const cBtn = document.getElementById('callConfirmBtn');
+        if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
+
+        document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
+        if(lang === 'english') document.getElementById('langEN').classList.add('active');
+        if(lang === 'malay') document.getElementById('langMY').classList.add('active');
+        if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
+    }
+
+    function getFormData(actionType) {
+        const selectedAgentId = AGENT_MAPPING[currentLang];
+        return {
+            timestamp: new Date().toISOString(),
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            mobile: document.getElementById('mobile').value,
+            budget: document.getElementById('budget').value,
+            requirements: document.getElementById('requirements').value,
+            formAction: actionType, 
+            chosen_agent_id: selectedAgentId,
+            language_preference: currentLang
+        };
+    }
+    
+    // --------------------------------------------------------------------------------
+    // 4. SUBMISSION LOGIC (With Ringtone Fix)
+    // --------------------------------------------------------------------------------
+    
+    function stopRingtone() {
+        const ringtone = document.getElementById('ringtonePlayer');
+        if(ringtone && !ringtone.paused) {
+            console.log("Stopping Ringtone");
+            ringtone.pause();
+            ringtone.currentTime = 0;
+        }
+    }
+
+    async function sendFormData(data) {
+        if (!data.name || !data.email || !data.requirements || !data.budget) {
+             alert("Please fill out all required fields.");
+             return;
+        }
+
+        const cBtn = document.getElementById('callConfirmBtn');
+        cBtn.disabled = true;
+        
+        if(data.formAction.includes('Call')) cBtn.innerText = "Connecting...";
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data), 
+            });
+
+            let responseData = await response.json().catch(() => ({}));
+            let accessToken = null;
+            if (Array.isArray(responseData) && responseData.length > 0) {
+                accessToken = responseData[0].access_token; 
+            } else if (responseData.access_token) {
+                accessToken = responseData.access_token; 
+            }
+
+            if (accessToken) {
+                // START RINGING
+                const ringtone = document.getElementById('ringtonePlayer');
+                if(ringtone) {
+                    ringtone.volume = 0.5;
+                    ringtone.currentTime = 0;
+                    const playPromise = ringtone.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => console.log("Auto-play prevented:", error));
+                    }
+                }
+
+                if (typeof window.RetellWebClient === 'undefined') {
+                    alert("SDK Loading... try again in 2 seconds.");
+                    resetButtons();
+                    return;
+                }
+                
+                const retellWebClient = new window.RetellWebClient();
+                let isAgentSpeaking = false; 
+
+                // 1. Call Connected
+                retellWebClient.on("call_started", () => {
+                    console.log("Call Connection Established");
+                    cBtn.innerText = "Speaking...";
+                    
+                    // FIXED TIMEOUT: 15 Seconds
+                    setTimeout(() => {
+                        if(!isAgentSpeaking) {
+                            console.log("Fallback stop ringtone after 15s");
+                            stopRingtone();
+                        }
+                    }, 15000); 
+                });
+
+                // 2. Data/Audio Received (Agent is talking)
+                retellWebClient.on("update", (update) => {
+                    if (!isAgentSpeaking) {
+                        console.log("Agent started interaction");
+                        stopRingtone();
+                        isAgentSpeaking = true;
+                    }
+                });
+                
+                // 3. Call Ended
+                retellWebClient.on("call_ended", () => {
+                    stopRingtone();
+                    resetButtons();
+                    alert("Call finished. Thank you!");
+                });
+                
+                // 4. Error
+                retellWebClient.on("error", (error) => {
+                    stopRingtone();
+                    console.error("Retell Error:", error);
+                    alert("Connection Error.");
+                    resetButtons();
+                });
+                
+                await retellWebClient.startCall({ accessToken: accessToken });
+
+            } else {
+                if (response.ok) alert("Submitted successfully!");
+                else alert("Submission failed.");
+                resetButtons();
+            }
+        } catch (error) {
+            console.error(error);
+            stopRingtone();
+            alert("Network Error.");
+            resetButtons();
+        }
+    }
+
+    function resetButtons() {
+        const cBtn = document.getElementById('callConfirmBtn');
+        const t = translations[currentLang];
+        cBtn.disabled = false;
+        cBtn.innerText = t.callConfirmBtn;
+    }
+
+    // Single Event Listener
+    document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
+
+</script>
+</body>
+</html>
