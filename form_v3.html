@@ -1,3 +1,5 @@
+code
+Html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +45,7 @@
             object-fit: cover;
             border: 2px solid #4CAF50;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            background-color: #eee; /* Fallback color if image missing */
+            background-color: #eee;
         }
 
         /* LANGUAGE SWITCHER */
@@ -108,10 +110,9 @@
                 <h1 id="mainTitle">Jason Chew's AI Classroom</h1>
                 <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
             </div>
-            <!-- FIX 1: Added a default online avatar so it works immediately. 
-                 Once you upload 'header-image.png' to GitHub, you can change the src back. -->
-            <img src="header-image.png" alt="Jason Chew" class="profile-img"> 
-            </div>
+            <!-- Your Image -->
+            <img src="header-image.png" onerror="this.style.display='none'" alt="Jason Chew" class="profile-img"> 
+        </div>
 
         <div class="lang-switcher">
             <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
@@ -141,7 +142,6 @@
         <div class="form-group">
             <label for="budget" id="lbl_budget">Budget *</label>
             <select id="budget" name="budget" required>
-                <!-- FIX 2: Added IDs to options so we can translate them -->
                 <option value="" disabled selected id="opt_default">Select an option...</option>
                 <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
                 <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
@@ -160,26 +160,31 @@
         </div>
 
         <div class="contact-info">
-            <!-- FIX 3: Added ID to Contact Label for translation -->
             <span id="lbl_contact">Contact:</span> 
             <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a>
         </div>
     </div>
 
+    <!-- AUDIO PLAYER: Placed CORRECTLY outside the script tag -->
+    <!-- I used a generic ringtone URL. If you uploaded 'ring.mp3', change the src below. -->
+    <audio id="ringtonePlayer" loop>
+        <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
+    </audio>
+
 <script>
     // --------------------------------------------------------------------------------
-    // 1. CONFIGURATION: PASTE AGENT IDs HERE
+    // 1. CONFIGURATION
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/5b1da6f1-1109-432e-ac32-828c140222ea"; 
 
     const AGENT_MAPPING = {
-        'english': 'agent_82cd6100568f17104e22a328a1',  // PASTE ID HERE
-        'malay':   'agent_b4a0a496d33f415009f6cfe4e7',    // PASTE ID HERE
-        'chinese': 'agent_327c54c1b151658e6c5ebf18e2'   // PASTE ID HERE
+        'english': 'agent_82cd6100568f17104e22a328a1', 
+        'malay':   'agent_b4a0a496d33f415009f6cfe4e7',    
+        'chinese': 'agent_327c54c1b151658e6c5ebf18e2'   
     };
 
     // --------------------------------------------------------------------------------
-    // 2. TRANSLATION DICTIONARY (Updated with Dropdown & Contact)
+    // 2. TRANSLATION DICTIONARY
     // --------------------------------------------------------------------------------
     const translations = {
         english: {
@@ -193,7 +198,6 @@
             submitBtn: "Submit (Log Only)",
             callConfirmBtn: "Speak To AI Agent",
             lbl_contact: "Contact:",
-            // Dropdown Options
             opt_default: "Select an option...",
             opt_1: "Below RM 4,000",
             opt_2: "RM 4,000 to RM 7,000",
@@ -210,7 +214,6 @@
             submitBtn: "Hantar (Log Sahaja)",
             callConfirmBtn: "Cakap dengan AI Agent",
             lbl_contact: "Hubungi:",
-            // Dropdown Options
             opt_default: "Sila pilih satu...",
             opt_1: "Bawah RM 4,000",
             opt_2: "RM 4,000 hingga RM 7,000",
@@ -227,7 +230,6 @@
             submitBtn: "提交 (仅记录)",
             callConfirmBtn: "与 AI Agent 通话",
             lbl_contact: "联系方式:",
-            // Dropdown Options
             opt_default: "请选择...",
             opt_1: "RM 4,000 以下",
             opt_2: "RM 4,000 至 RM 7,000",
@@ -235,16 +237,13 @@
         }
     };
 
-    // Current State
     let currentLang = 'english';
 
     // --------------------------------------------------------------------------------
-    // 3. UI LOGIC: LANGUAGE SWITCHING (Updated)
+    // 3. UI LOGIC
     // --------------------------------------------------------------------------------
     function setLanguage(lang) {
-        currentLang = lang; // Update Global State
-
-        // Update Labels & Buttons
+        currentLang = lang;
         const t = translations[lang];
         document.getElementById('mainTitle').innerText = t.mainTitle;
         document.getElementById('subTitle').innerText = t.subTitle;
@@ -254,32 +253,24 @@
         document.getElementById('lbl_budget').innerText = t.lbl_budget;
         document.getElementById('lbl_req').innerText = t.lbl_req;
         document.getElementById('lbl_contact').innerText = t.lbl_contact;
-
-        // Update Dropdown Options
         document.getElementById('opt_default').innerText = t.opt_default;
         document.getElementById('opt_1').innerText = t.opt_1;
         document.getElementById('opt_2').innerText = t.opt_2;
         document.getElementById('opt_3').innerText = t.opt_3;
         
-        // Update Buttons (Only if not currently active/loading)
         const sBtn = document.getElementById('submitBtn');
         const cBtn = document.getElementById('callConfirmBtn');
         if(!sBtn.disabled) sBtn.innerText = t.submitBtn;
         if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
 
-        // Highlight Active Link
         document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
         if(lang === 'english') document.getElementById('langEN').classList.add('active');
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
     }
 
-    // --------------------------------------------------------------------------------
-    // 4. DATA GATHERING
-    // --------------------------------------------------------------------------------
     function getFormData(actionType) {
         const selectedAgentId = AGENT_MAPPING[currentLang];
-
         return {
             timestamp: new Date().toISOString(),
             name: document.getElementById('name').value,
@@ -294,7 +285,7 @@
     }
     
     // --------------------------------------------------------------------------------
-    // 5. SUBMISSION & CALL LOGIC (Same as before)
+    // 4. SUBMISSION LOGIC (With Audio)
     // --------------------------------------------------------------------------------
     async function sendFormData(data) {
         if (!data.name || !data.email || !data.requirements || !data.budget) {
@@ -304,7 +295,6 @@
 
         const sBtn = document.getElementById('submitBtn');
         const cBtn = document.getElementById('callConfirmBtn');
-        
         sBtn.disabled = true;
         cBtn.disabled = true;
         
@@ -327,24 +317,42 @@
             }
 
             if (accessToken) {
+                // START RINGING ------------------------
+                const ringtone = document.getElementById('ringtonePlayer');
+                if(ringtone) {
+                    ringtone.volume = 0.5;
+                    ringtone.currentTime = 0;
+                    ringtone.play().catch(e => console.log("Audio play blocked", e));
+                }
+                // --------------------------------------
+
                 if (typeof window.RetellWebClient === 'undefined') {
                     alert("SDK Loading... try again in 2 seconds.");
                     resetButtons();
                     return;
                 }
                 const retellWebClient = new window.RetellWebClient();
+                
                 retellWebClient.on("call_started", () => {
+                    // STOP RINGING ---------------------
+                    if(ringtone) ringtone.pause();
+                    // ----------------------------------
                     cBtn.innerText = "Speaking...";
                 });
+                
                 retellWebClient.on("call_ended", () => {
+                    if(ringtone) ringtone.pause();
                     resetButtons();
                     alert("Call finished. Thank you!");
                 });
+                
                 retellWebClient.on("error", (error) => {
+                    if(ringtone) ringtone.pause();
                     console.error("Retell Error:", error);
                     alert("Connection Error.");
                     resetButtons();
                 });
+                
                 await retellWebClient.startCall({ accessToken: accessToken });
 
             } else {
@@ -354,6 +362,8 @@
             }
         } catch (error) {
             console.error(error);
+            const ringtone = document.getElementById('ringtonePlayer');
+            if(ringtone) ringtone.pause();
             alert("Network Error.");
             resetButtons();
         }
@@ -363,17 +373,14 @@
         const sBtn = document.getElementById('submitBtn');
         const cBtn = document.getElementById('callConfirmBtn');
         const t = translations[currentLang];
-        
         sBtn.disabled = false;
         cBtn.disabled = false;
         sBtn.innerText = t.submitBtn;
         cBtn.innerText = t.callConfirmBtn;
     }
 
-    // Event Listeners
     document.getElementById('submitBtn').addEventListener('click', () => sendFormData(getFormData('Submit (Log Only)')));
     document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
-
 
 </script>
 </body>
