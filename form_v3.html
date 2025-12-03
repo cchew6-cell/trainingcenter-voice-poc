@@ -1,11 +1,180 @@
-code
-Html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jason Chew's AI Classroom</title>
+    
+    <!-- Retell SDK -->
+    <script type="module">
+        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
+        window.RetellWebClient = RetellWebClient;
+    </script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; }
+        
+        /* HEADER LAYOUT */
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-section h1 {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.2;
+        }
+
+        .profile-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4CAF50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #eee;
+        }
+
+        /* LANGUAGE SWITCHER */
+        .lang-switcher {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .lang-option {
+            padding: 0 5px;
+            transition: color 0.3s;
+        }
+
+        .lang-option:hover { color: #000; }
+        .lang-option.active { color: #d32f2f; text-decoration: underline; } 
+
+        /* FORM STYLES */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; 
+            border: 1px solid #ccc; border-radius: 6px; 
+            box-sizing: border-box; font-size: 14px;
+        }
+        
+        .class-button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button { 
+            flex: 1; 
+            padding: 12px; 
+            cursor: pointer; 
+            border: none; 
+            color: white; 
+            border-radius: 6px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            transition: background 0.3s;
+        }
+        
+        #submitBtn { background-color: #4CAF50; } 
+        #submitBtn:hover { background-color: #45a049; }
+
+        #callConfirmBtn { background-color: #f44336; } 
+        #callConfirmBtn:hover { background-color: #d32f2f; }
+        #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
+
+        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER SECTION -->
+    <div class="header-container">
+        <div class="brand-section">
+            <div class="titles">
+                <h1 id="mainTitle">Jason Chew's AI Classroom</h1>
+                <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
+            </div>
+            <!-- Your Image -->
+            <img src="header-image.png" onerror="this.style.display='none'" alt="Jason Chew" class="profile-img"> 
+        </div>
+
+        <div class="lang-switcher">
+            <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
+            <span class="lang-option" onclick="setLanguage('malay')" id="langMY">MY</span>
+            <span class="lang-option" onclick="setLanguage('chinese')" id="langCN">中文</span>
+        </div>
+    </div>
+
+    <!-- FORM SECTION -->
+    <div id="inquiryForm">
+        
+        <div class="form-group">
+            <label for="name" id="lbl_name">Name *</label>
+            <input type="text" id="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email" id="lbl_email">Email *</label>
+            <input type="email" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mobile" id="lbl_mobile">Mobile Phone Number *</label>
+            <input type="tel" id="mobile" required placeholder="+60123456789">
+        </div>
+        
+        <div class="form-group">
+            <label for="budget" id="lbl_budget">Budget *</label>
+            <select id="budget" name="budget" required>
+                <option value="" disabled selected id="opt_default">Select an option...</option>
+                <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
+                <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
+                <option value="RM 7,000 to RM 11,000" id="opt_3">RM 7,000 to RM 11,000</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="requirements" id="lbl_req">Please describe your training course requirement *</label>
+            <textarea id="requirements" rows="4" required></textarea>
+        </div>
+
+        <div class="class-button-group">
+            <button type="button" id="submitBtn">Submit (Log Only)</button>
+            <button type="button" id="callConfirmBtn">Speak To AI Agent</button>
+        </div>
+
+        <div class="contact-info">
+            <span id="lbl_contact">Contact:</span> 
+            <a href="mailto:JasonChewHDRCtrainer@gmail.com">JasonChewHDRCtrainer@gmail.com</a>
+        </div>
+    </div>
+
+    <!-- AUDIO PLAYER -->
+    <audio id="ringtonePlayer" loop>
+        <source src="ring.mp3" type="audio/mpeg">
+    </audio>
+
 <script>
     // --------------------------------------------------------------------------------
     // 1. CONFIGURATION
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/5b1da6f1-1109-432e-ac32-828c140222ea"; 
 
+    // !!! PASTE YOUR REAL AGENT IDs HERE !!!
     const AGENT_MAPPING = {
         'english': 'agent_82cd6100568f17104e22a328a1', 
         'malay':   'agent_b4a0a496d33f415009f6cfe4e7',    
@@ -117,7 +286,6 @@ Html
     // 4. SUBMISSION LOGIC (Improved Audio Handling)
     // --------------------------------------------------------------------------------
     
-    // Helper to safely stop audio
     function stopRingtone() {
         const ringtone = document.getElementById('ringtonePlayer');
         if(ringtone && !ringtone.paused) {
@@ -157,20 +325,16 @@ Html
             }
 
             if (accessToken) {
-                // --- START RINGING ---
+                // START RINGING
                 const ringtone = document.getElementById('ringtonePlayer');
                 if(ringtone) {
                     ringtone.volume = 0.5;
                     ringtone.currentTime = 0;
-                    // Play and handle auto-play blocks
                     const playPromise = ringtone.play();
                     if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.log("Auto-play prevented:", error);
-                        });
+                        playPromise.catch(error => console.log("Auto-play prevented:", error));
                     }
                 }
-                // ---------------------
 
                 if (typeof window.RetellWebClient === 'undefined') {
                     alert("SDK Loading... try again in 2 seconds.");
@@ -179,17 +343,14 @@ Html
                 }
                 
                 const retellWebClient = new window.RetellWebClient();
-                let isAgentSpeaking = false; // Flag to track if agent started
+                let isAgentSpeaking = false; 
 
-                // 1. Call Connected (But maybe silent)
+                // 1. Call Connected
                 retellWebClient.on("call_started", () => {
                     console.log("Call Connection Established");
                     cBtn.innerText = "Speaking...";
                     
-                    // DO NOT STOP RINGING HERE YET.
-                    // We wait for the 'update' event or a fallback timeout.
-                    
-                    // Safety Fallback: Stop ringing after 4 seconds max if no update received
+                    // Safety Fallback: Stop ringing after 4s max
                     setTimeout(() => {
                         if(!isAgentSpeaking) {
                             console.log("Fallback stop ringtone");
@@ -200,7 +361,6 @@ Html
 
                 // 2. Data/Audio Received (Agent is talking)
                 retellWebClient.on("update", (update) => {
-                    // When we receive the first transcript or audio logic, stop ringing
                     if (!isAgentSpeaking) {
                         console.log("Agent started interaction");
                         stopRingtone();
@@ -252,3 +412,5 @@ Html
     document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
 
 </script>
+</body>
+</html>
