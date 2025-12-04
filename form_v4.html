@@ -340,13 +340,13 @@
                     console.log("Call Connection Established");
                     cBtn.innerText = "Speaking...";
                     
-                    // FIXED TIMEOUT: 15 Seconds
+                    // FIXED TIMEOUT: 60 Seconds
                     setTimeout(() => {
                         if(!isAgentSpeaking) {
-                            console.log("Fallback stop ringtone after 15s");
+                            console.log("Fallback stop ringtone after 60s");
                             stopRingtone();
                         }
-                    }, 15000); 
+                    }, 60000); 
                 });
 
                 // 2. Data/Audio Received (Agent is talking)
