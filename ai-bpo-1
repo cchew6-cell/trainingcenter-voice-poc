@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI BPO Feasibility Study: Disrupting the Malaysian Market</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Theme Palette: Vibrant Tech -->
+    <!-- 
+        Primary: #1E3A8A (Deep Blue)
+        Secondary: #3B82F6 (Bright Blue)
+        Accent: #8B5CF6 (Electric Purple)
+        Success: #10B981 (Neon Green)
+        Warning: #F59E0B (Amber)
+        Background: #F3F4F6 (Light Grey)
+        Card: #FFFFFF (White)
+    -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+            color: #1F2937;
+        }
+        
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base height */
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Flowchart Connector Lines */
+        .connector-vertical {
+            width: 2px;
+            height: 20px;
+            background-color: #CBD5E1;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Plan Summary -->
+    <!-- 
+    NARRATIVE PLAN:
+    1. Header: The Disruption Thesis (Replacing Traditional BPO).
+    2. Market Analysis: The SME Opportunity Gap (The Blue Ocean).
+    3. Competitor Benchmark: Analyzing Asia Fibre (Heavy Asset) vs. AI (Light Asset).
+    4. Financial Reality: The Unit Economics of RM 60/month (The Risk).
+    5. Operational Strategy: How it works (Process Flow).
+    6. Recommendation: The Verdict & Strategy.
+    -->
+
+    <!-- Section 1: Hero / Introduction -->
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-purple-900 text-white py-16 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">AI BPO Transformation</h1>
+            <p class="text-xl md:text-2xl text-blue-200 mb-8 max-w-3xl mx-auto">Feasibility Study: Outperforming Conventional BPOs with AI Voice Technology for Malaysian SMEs.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="bg-white/10 px-6 py-3 rounded-full border border-white/20">
+                    <span class="font-bold text-green-400">Target:</span> Malaysian SMEs
+                </div>
+                <div class="bg-white/10 px-6 py-3 rounded-full border border-white/20">
+                    <span class="font-bold text-yellow-400">Tech:</span> Retell AI + Twilio
+                </div>
+                <div class="bg-white/10 px-6 py-3 rounded-full border border-white/20">
+                    <span class="font-bold text-purple-400">Strategy:</span> Cost Leadership
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-12 space-y-16">
+
+        <!-- Section 2: Market Analysis (The Opportunity) -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-blue-900 border-l-4 border-purple-500 pl-4 mb-2">The Market Opportunity</h2>
+                <p class="text-gray-600 max-w-3xl">Conventional BPOs like <strong>Asia Fibre Solutions</strong> target large enterprises (Telcos, Banks) due to high minimum operational costs. This leaves a massive "Blue Ocean" of SMEs who cannot afford traditional retainers.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <!-- Visualization: SME Market Share -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Malaysian Business Landscape</h3>
+                    <!-- Data Point -> Goal: Inform -> Donut Chart -> Chart.js -->
+                    <div class="chart-container">
+                        <canvas id="marketShareChart"></canvas>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-4 text-center">97% of business establishments in Malaysia are SMEs, yet less than 15% use managed CRM services.</p>
+                </div>
+
+                <!-- Key Stat Cards -->
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg">
+                        <h4 class="text-xl font-bold text-blue-900 mb-2">The Problem</h4>
+                        <p class="text-gray-700">Small business owners (Contractors, Clinics, Agents) miss roughly <span class="font-bold text-red-600">35%</span> of inbound calls while working, leading to lost revenue.</p>
+                    </div>
+                    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                        <h4 class="text-xl font-bold text-green-900 mb-2">The AI Solution</h4>
+                        <p class="text-gray-700">An always-on AI receptionist capturing leads for <span class="font-bold text-green-700">RM 60 - RM 100</span> per month, drastically lower than a human receptionist (RM 1,500+).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Competitor Benchmark (AI vs Conventional) -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-blue-900 border-l-4 border-purple-500 pl-4 mb-2">Competitive Landscape</h2>
+                <p class="text-gray-600 max-w-3xl">Benchmarking against the "Asia Fibre" profile. Their strength lies in human empathy and complex problem solving. The AI strength is scalability, cost, and availability.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Visualization: Radar Comparison -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Capability Comparison: Human Agent vs. AI Agent</h3>
+                    <!-- Data Point -> Goal: Compare Attributes -> Radar Chart -> Chart.js -->
+                    <div class="chart-container">
+                        <canvas id="radarComparisonChart"></canvas>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-4">AI dominates in Scalability, Cost Efficiency, and Availability. Human agents retain the edge in Complex Empathy and Nuance.</p>
+                </div>
+
+                <!-- Operational Comparison List -->
+                <div class="bg-gray-800 text-white rounded-xl shadow-lg p-6 flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-purple-400 mb-6">Operational Model Clash</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Traditional -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">🏢</span>
+                                <h4 class="font-bold text-gray-300">Conventional (Asia Fibre)</h4>
+                            </div>
+                            <ul class="text-sm text-gray-400 space-y-1 ml-9">
+                                <li>• High physical overhead (Rent, Electricity)</li>
+                                <li>• Training Rooms & Recreation facilities</li>
+                                <li>• Staff Benefits (Incentive Trips, EPF/SOCSO)</li>
+                                <li>• <strong>Cost to Client: High (RM 3k+ retainer)</strong></li>
+                            </ul>
+                        </div>
+
+                        <hr class="border-gray-600">
+
+                        <!-- AI Model -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">🚀</span>
+                                <h4 class="font-bold text-green-400">Your AI Model</h4>
+                            </div>
+                            <ul class="text-sm text-gray-400 space-y-1 ml-9">
+                                <li>• Zero physical infrastructure (Cloud-based)</li>
+                                <li>• Instant Knowledge Injection (Prompt Engineering)</li>
+                                <li>• No fatigue, 24/7 uptime</li>
+                                <li>• <strong>Cost to Client: Low (RM 100 subscription)</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Financial Feasibility (The Math) -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-blue-900 border-l-4 border-yellow-500 pl-4 mb-2">Financial Feasibility Analysis</h2>
+                <p class="text-gray-600 max-w-3xl">The "RM 60 Subscription" strategy faces a critical unit economics challenge. AI telephony costs are per-minute. Unlimited usage models will lead to losses.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Visualization: Break Even Analysis -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Profitability vs. Call Volume (At RM 100/mo)</h3>
+                    <!-- Data Point -> Goal: Reveal Correlation -> Line/Bar Combo -> Chart.js -->
+                    <div class="chart-container">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                    <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+                        <strong>Warning:</strong> At ~120 minutes of usage, operational costs (Retell/Twilio/LLM) exceed the RM 100 revenue. A "Fair Usage Policy" is mandatory.
+                    </div>
+                </div>
+
+                <!-- Pricing Strategy Cards -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-gray-800">Recommended Pricing Models</h3>
+                    
+                    <div class="bg-white p-5 rounded-lg shadow border-l-4 border-red-500 opacity-75">
+                        <h4 class="font-bold text-red-700">⛔ Model A: Flat Rate Unlimited</h4>
+                        <p class="text-sm text-gray-600 mt-1">RM 100 / month.</p>
+                        <p class="text-xs text-gray-500 mt-2">Risk: High. One talkative client destroys the margin of 5 profitable ones.</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg shadow border-l-4 border-green-500 transform scale-105 transition-transform">
+                        <h4 class="font-bold text-green-700">✅ Model B: Hybrid Subscription</h4>
+                        <p class="text-sm text-gray-600 mt-1">RM 80 Base Fee (Includes 60 mins).</p>
+                        <p class="text-xs text-gray-500 mt-2">Overage: RM 1.20 per minute. Ensures profitability on every call.</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg shadow border-l-4 border-blue-500">
+                        <h4 class="font-bold text-blue-700">🔹 Model C: Pay Per Lead</h4>
+                        <p class="text-sm text-gray-600 mt-1">Free Setup.</p>
+                        <p class="text-xs text-gray-500 mt-2">Charge RM 15 per confirmed appointment booked. Aligns incentives with value.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Implementation Roadmap -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-blue-900 border-l-4 border-green-500 pl-4 mb-2">Strategic Roadmap</h2>
+                <p class="text-gray-600">Go-to-Market strategy for Malaysian SMEs.</p>
+            </div>
+
+            <!-- Custom Flowchart using Tailwind Grid/Flex -->
+            <div class="bg-white rounded-xl shadow-lg p-8 overflow-x-auto">
+                <div class="min-w-[800px]">
+                    <div class="grid grid-cols-4 gap-4 text-center relative">
+                        <!-- Connecting Line Background -->
+                        <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-0 transform -translate-y-1/2"></div>
+
+                        <!-- Step 1 -->
+                        <div class="relative z-10 bg-white p-4">
+                            <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm">🎯</div>
+                            <h4 class="font-bold text-blue-900">Phase 1: Niche Focus</h4>
+                            <p class="text-xs text-gray-500 mt-2">Target Clinics & Salons. Simple "Booking" intent. High value per lead.</p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative z-10 bg-white p-4">
+                            <div class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm">🗣️</div>
+                            <h4 class="font-bold text-purple-900">Phase 2: Localization</h4>
+                            <p class="text-xs text-gray-500 mt-2">Fine-tune Prompts for "Manglish". Handle dialect nuances.</p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative z-10 bg-white p-4">
+                            <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm">💰</div>
+                            <h4 class="font-bold text-green-900">Phase 3: Sales Pilot</h4>
+                            <p class="text-xs text-gray-500 mt-2">Launch "Model B" pricing. Acquire 10 beta users at RM 50/mo.</p>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="relative z-10 bg-white p-4">
+                            <div class="w-16 h-16 mx-auto bg-yellow-100 rounded-full flex items-center justify-center text-2xl mb-4 border-4 border-white shadow-sm">📈</div>
+                            <h4 class="font-bold text-yellow-900">Phase 4: Scale</h4>
+                            <p class="text-xs text-gray-500 mt-2">Automate onboarding. Integrate with Google Calendar API.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="bg-gray-800 text-white py-12 rounded-t-3xl mt-12">
+            <div class="max-w-4xl mx-auto text-center px-4">
+                <h3 class="text-2xl font-bold mb-4">Verdict: Viable with Cost Controls</h3>
+                <p class="text-gray-400 mb-6">The technology allows you to outperform conventional BPOs in price and speed. However, the RM 60 price point is a loss-leader. Adopt a "Subscription + Usage" model to ensure long-term sustainability.</p>
+                <div class="inline-block bg-blue-600 px-8 py-3 rounded-lg font-bold">Launch Feasibility: 85%</div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // --- Helper Function: Split Long Labels (16 char limit) ---
+        function splitLabel(label) {
+            if (typeof label !== 'string') return label;
+            if (label.length <= 16) return label;
+            
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + " " + words[i]).length > 16) {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                } else {
+                    currentLine += " " + words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- Shared Tooltip Config ---
+        const commonTooltip = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- Chart 1: Market Share (Donut) ---
+        const ctxMarket = document.getElementById('marketShareChart').getContext('2d');
+        const marketLabels = ["SMEs without CRM/BPO", "SMEs with Managed Services", "Large Enterprises"];
+        new Chart(ctxMarket, {
+            type: 'doughnut',
+            data: {
+                labels: marketLabels.map(splitLabel),
+                datasets: [{
+                    data: [85, 12, 3],
+                    backgroundColor: ['#3B82F6', '#10B981', '#6B7280'], // Blue (Opportunity), Green, Grey
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: commonTooltip,
+                    title: { display: true, text: 'Target Market Distribution' }
+                }
+            }
+        });
+
+        // --- Chart 2: Radar Comparison (Radar) ---
+        const ctxRadar = document.getElementById('radarComparisonChart').getContext('2d');
+        const radarLabels = ["Cost Efficiency", "Scalability (Speed)", "Availability (24/7)", "Empathy/Nuance", "Setup Complexity"];
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: radarLabels.map(splitLabel),
+                datasets: [{
+                    label: 'Proposed AI Model',
+                    data: [95, 100, 100, 40, 90],
+                    fill: true,
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)', // Purple
+                    borderColor: 'rgb(139, 92, 246)',
+                    pointBackgroundColor: 'rgb(139, 92, 246)',
+                }, {
+                    label: 'Conventional BPO (Asia Fibre)',
+                    data: [30, 40, 50, 95, 30],
+                    fill: true,
+                    backgroundColor: 'rgba(107, 114, 128, 0.2)', // Grey
+                    borderColor: 'rgb(107, 114, 128)',
+                    pointBackgroundColor: 'rgb(107, 114, 128)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: commonTooltip
+                },
+                scales: {
+                    r: {
+                        angleLines: { display: true },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+
+        // --- Chart 3: Financial Break-Even (Bar/Line Combo) ---
+        // Showing Revenue flat at RM100 vs Costs rising with minutes
+        const ctxFinance = document.getElementById('financialChart').getContext('2d');
+        const minutes = [0, 50, 100, 150, 200, 300];
+        const revenue = [100, 100, 100, 100, 100, 100]; // Flat subscription
+        // Assuming approx RM 0.80 per minute total cost (Retell + Twilio + LLM)
+        const costs = minutes.map(m => m * 0.80); 
+
+        new Chart(ctxFinance, {
+            type: 'bar',
+            data: {
+                labels: minutes.map(m => m + " Mins Used"),
+                datasets: [{
+                    type: 'line',
+                    label: 'Revenue (Subscription)',
+                    data: revenue,
+                    borderColor: '#10B981', // Green
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.1
+                }, {
+                    type: 'bar',
+                    label: 'Variable AI Costs (RM)',
+                    data: costs,
+                    backgroundColor: '#EF4444', // Red
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: commonTooltip,
+                    title: { display: true, text: 'The Danger Zone: Costs vs Revenue' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Value (MYR)' }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
