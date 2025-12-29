@@ -12,28 +12,68 @@
     </script>
     
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; padding-bottom: 60px; }
+        
+        /* HEADER LAYOUT */
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .brand-section { display: flex; align-items: center; gap: 15px; }
         .brand-section h1 { margin: 0; font-size: 24px; line-height: 1.2; }
         .profile-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #eee; }
+        
+        /* LANGUAGE SWITCHER */
         .lang-switcher { font-size: 18px; font-weight: bold; color: #555; cursor: pointer; }
         .lang-option { padding: 0 5px; transition: color 0.3s; }
         .lang-option:hover { color: #000; }
         .lang-option.active { color: #d32f2f; text-decoration: underline; } 
+        
+        /* FORM STYLES */
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        /* CHECKBOX STYLES */
         .checkbox-container { display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
         .checkbox-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; }
         .checkbox-item input[type="checkbox"] { width: auto; margin-top: 3px; }
         #other_input_container { margin-top: 5px; margin-left: 25px; display: none; }
-        .class-button-group { display: flex; gap: 15px; margin-top: 25px; }
-        button { width: 100%; padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 18px; font-weight: bold; transition: background 0.3s; }
+        
+        /* BUTTON GROUP (Side by Side) */
+        .class-button-group { display: flex; gap: 10px; margin-top: 25px; }
+        
+        button { 
+            flex: 1; /* Makes buttons equal width */
+            padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; 
+        }
+        
         #callConfirmBtn { background-color: #f44336; } 
         #callConfirmBtn:hover { background-color: #d32f2f; }
         #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
-        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; }
+
+        #startChatBtn { background-color: #2196F3; } /* Blue for Chat */
+        #startChatBtn:hover { background-color: #1976D2; }
+        #startChatBtn:disabled { background-color: #90CAF9; cursor: not-allowed; }
+
+        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center;}
+
+        /* DISCLAIMER FOOTER */
+        .legal-footer {
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #6c757d;
+            line-height: 1.5;
+            text-align: justify;
+        }
+        .legal-footer h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #343a40;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -113,13 +153,30 @@
         </div>
 
         <div class="class-button-group">
+            <!-- WebRTC Call Button -->
             <button type="button" id="callConfirmBtn">Speak To AI Agent (Call)</button>
+            <!-- Chat Widget Button (New) -->
+            <button type="button" id="startChatBtn">Chat with AI Agent</button>
         </div>
 
         <div class="contact-info">
             <span id="lbl_contact">Contact:</span> 
             <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
         </div>
+    </div>
+
+    <!-- DISCLAIMER FOOTER -->
+    <div class="legal-footer">
+        <h4>JasonChew.HDRCtrainer@gmail.com</h4>
+        <p>
+            <strong>Legal Disclaimer:</strong> This tool is provided for educational and administrative convenience. 
+            Users are <strong>solely responsible</strong> for ensuring that their use of this tool does not breach the copyright, 
+            intellectual property rights, or Terms of Service of any target systems.
+        </p>
+        <p>
+            Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, 
+            unauthorized data usage, or legal consequences arising from the actions of the user.
+        </p>
     </div>
 
     <!-- AUDIO PLAYER -->
@@ -132,12 +189,22 @@
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     
     // --- KEY CONFIGURATION ---
-    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR KEY
+    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
     
-    const AGENT_MAPPING = {
+    // Voice Agent IDs (For Call Button)
+    const VOICE_AGENT_MAPPING = {
         'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
         'malay':   'agent_5b1878d8340797676edfb17e08',    
         'chinese': 'agent_798042308572cdcdae32b94241'   
+    };
+
+    // Chat Agent IDs (For Chat Button) - PASTE NEW IDs IF YOU CREATED THEM
+    // If you haven't created separate chat agents yet, you can temporarily use Voice IDs here to test,
+    // but remember Retell prefers separate IDs.
+    const CHAT_AGENT_MAPPING = {
+        'english': 'agent_53bfb2a24ce775fc88923be52e', 
+        'malay':   'agent_9b25198e5b056b5412458dbbc6',    
+        'chinese': 'agent_57560d7227f800a4a8b449222b'   
     };
 
     // --- TRANSLATIONS ---
@@ -147,7 +214,7 @@
             subTitle: "Training Course Inquiry Form",
             lbl_name: "Name *",
             lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number *",
+            lbl_mobile: "Mobile Phone Number * [sample:  +60123456789]",
             lbl_budget: "Budget *",
             lbl_courses: "Please tick the training course(s) that you are interested in: *",
             lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
@@ -155,6 +222,7 @@
             lbl_c3: "AI-Enhanced Customer Service Excellence (Half Day course)",
             lbl_other: "Other",
             callConfirmBtn: "Speak To AI Agent (Call)",
+            startChatBtn: "Chat with AI Agent",
             lbl_contact: "Contact:",
             opt_default: "Select an option...",
             opt_1: "Below RM 4,000",
@@ -174,6 +242,7 @@
             lbl_c3: "Kecemerlangan Perkhidmatan Pelanggan Dipertingkatkan AI (Kursus Separuh Hari)",
             lbl_other: "Lain-lain",
             callConfirmBtn: "Cakap dengan AI Agent (Call)",
+            startChatBtn: "Sembang dengan AI Agent",
             lbl_contact: "Hubungi:",
             opt_default: "Sila pilih satu...",
             opt_1: "Bawah RM 4,000",
@@ -193,6 +262,7 @@
             lbl_c3: "AI 增强型卓越客户服务 (半天课程)",
             lbl_other: "其他",
             callConfirmBtn: "与 AI Agent 通话 (拨打)",
+            startChatBtn: "与 AI Agent 文字聊天",
             lbl_contact: "联系方式:",
             opt_default: "请选择...",
             opt_1: "RM 4,000 以下",
@@ -202,6 +272,7 @@
     };
 
     let currentLang = 'english';
+    let isChatLoaded = false; // Flag to track if chat is active
 
     // --- LANGUAGE SWITCHING ---
     function setLanguage(lang) {
@@ -219,7 +290,6 @@
         document.getElementById('opt_1').innerText = t.opt_1;
         document.getElementById('opt_2').innerText = t.opt_2;
         document.getElementById('opt_3').innerText = t.opt_3;
-        
         document.getElementById('lbl_courses').innerText = t.lbl_courses;
         document.getElementById('lbl_c1').innerText = t.lbl_c1;
         document.getElementById('lbl_c2').innerText = t.lbl_c2;
@@ -227,32 +297,35 @@
         document.getElementById('lbl_other').innerText = t.lbl_other;
 
         const cBtn = document.getElementById('callConfirmBtn');
+        const chatBtn = document.getElementById('startChatBtn');
         if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
+        if(!chatBtn.disabled) chatBtn.innerText = t.startChatBtn;
 
         document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
         if(lang === 'english') document.getElementById('langEN').classList.add('active');
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        // RELOAD CHAT WIDGET
-        updateChatWidget(AGENT_MAPPING[lang]);
+        // Only reload widget if it was already loaded by the user
+        if (isChatLoaded) {
+            loadChatWidget(); 
+        }
     }
 
-    // --- DYNAMIC CHAT WIDGET FUNCTION ---
-    function updateChatWidget(agentId) {
-        // Remove existing widget
-        const oldScript = document.getElementById('retell-widget'); // FIX: Use correct ID
+    // --- DYNAMIC CHAT WIDGET LOADER ---
+    function loadChatWidget() {
+        const agentId = CHAT_AGENT_MAPPING[currentLang];
+
+        // 1. Remove existing
+        const oldScript = document.getElementById('retell-widget');
         if (oldScript) oldScript.remove();
         
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
 
-        // Inject new script
+        // 2. Inject new
         const script = document.createElement('script');
-        
-        // FIX: The ID MUST be exactly 'retell-widget' for the library to find itself
-        script.id = 'retell-widget'; 
-        
+        script.id = 'retell-widget';
         script.src = 'https://dashboard.retellai.com/retell-widget.js';
         script.type = 'module';
         
@@ -261,6 +334,7 @@
         script.setAttribute('data-title', 'Jason Chew AI Assistant');
         
         document.body.appendChild(script);
+        isChatLoaded = true;
     }
 
     // Toggle Other Input
@@ -270,13 +344,47 @@
         container.style.display = chk.checked ? 'block' : 'none';
     };
 
-    // --- CALL SUBMISSION LOGIC ---
+    // --- FORM VALIDATION HELPER ---
+    function validateForm() {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const budget = document.getElementById('budget').value;
+        
+        let selectedCourses = false;
+        document.querySelectorAll('input[name="course"]:checked').forEach(() => selectedCourses = true);
+
+        if (!name || !email || !budget) {
+             alert("Please fill out all required fields (Name, Email, Budget).");
+             return false;
+        }
+        if (!selectedCourses) {
+             alert("Please tick at least one course.");
+             return false;
+        }
+        return true;
+    }
+
+    // --- BUTTON EVENT LISTENERS ---
+
+    // 1. CHAT BUTTON LOGIC
+    document.getElementById('startChatBtn').addEventListener('click', () => {
+        if (validateForm()) {
+            loadChatWidget();
+            alert("Chat Widget Loaded! Look for the icon in the bottom right corner.");
+            document.getElementById('startChatBtn').style.display = 'none'; // Hide button after load
+        }
+    });
+
+    // 2. CALL BUTTON LOGIC
+    document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
+
+
+    // --- DATA GATHERING FOR CALL ---
     function getFormData(actionType) {
-        const selectedAgentId = AGENT_MAPPING[currentLang];
+        const selectedAgentId = VOICE_AGENT_MAPPING[currentLang];
         
         let selectedCourses = [];
         const checkboxes = document.querySelectorAll('input[name="course"]:checked');
-        
         checkboxes.forEach((checkbox) => {
             if (checkbox.value === "Other") {
                 const otherText = document.getElementById('other_text').value.trim();
@@ -302,6 +410,7 @@
         };
     }
     
+    // --- CALL SENDING LOGIC ---
     function stopRingtone() {
         const ringtone = document.getElementById('ringtonePlayer');
         if(ringtone && !ringtone.paused) {
@@ -311,15 +420,7 @@
     }
 
     async function sendFormData(data) {
-        if (!data.name || !data.email || !data.budget) {
-             alert("Please fill out all required fields.");
-             return;
-        }
-        
-        if (data.requirements === "No specific course selected") {
-             alert("Please tick at least one course.");
-             return;
-        }
+        if (!validateForm()) return; // Re-use validation function
 
         const cBtn = document.getElementById('callConfirmBtn');
         cBtn.disabled = true;
@@ -404,12 +505,6 @@
         cBtn.disabled = false;
         cBtn.innerText = t.callConfirmBtn;
     }
-
-    document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
-
-    // --- INITIALIZE CHAT WIDGET ON LOAD ---
-    // Loads the English chat widget by default
-    updateChatWidget(AGENT_MAPPING['english']);
 
 </script>
 </body>
