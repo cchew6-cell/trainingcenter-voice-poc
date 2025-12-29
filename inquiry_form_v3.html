@@ -241,7 +241,7 @@
     // --- DYNAMIC CHAT WIDGET FUNCTION ---
     function updateChatWidget(agentId) {
         // Remove existing widget
-        const oldScript = document.getElementById('retell-widget-script');
+        const oldScript = document.getElementById('retell-widget'); // FIX: Use correct ID
         if (oldScript) oldScript.remove();
         
         const oldWidget = document.querySelector('retell-widget');
