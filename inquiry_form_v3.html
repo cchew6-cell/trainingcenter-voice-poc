@@ -53,6 +53,19 @@
         #startChatBtn:hover { background-color: #1976D2; }
         #startChatBtn:disabled { background-color: #90CAF9; cursor: not-allowed; }
 
+        /* HELPER TEXT FOR CHAT */
+        #chatHelperText {
+            display: none;
+            text-align: center;
+            color: #2196F3;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 14px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
         .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center;}
 
         /* DISCLAIMER FOOTER */
@@ -69,6 +82,18 @@
         }
         .legal-footer h4 { margin-top: 0; margin-bottom: 8px; font-size: 12px; color: #343a40; text-align: center; }
         .legal-footer strong { color: #555; }
+
+        /* --- CUSTOM WIDGET STYLING --- */
+        /* This forces the widget to be bigger and more noticeable */
+        retell-widget {
+            z-index: 9999 !important;
+            /* Make it 30% Bigger */
+            transform: scale(1.3); 
+            transform-origin: bottom right;
+            /* Move it slightly inward so it's not stuck in the far corner */
+            right: 20px !important;
+            bottom: 20px !important;
+        }
     </style>
 </head>
 <body>
@@ -104,7 +129,7 @@
         </div>
 
         <div class="form-group">
-            <label for="mobile" id="lbl_mobile">Mobile Phone Number *</label>
+            <label for="mobile" id="lbl_mobile">Mobile Phone Number  [example: +60123456789] *</label>
             <input type="tel" id="mobile" required placeholder="+60123456789">
         </div>
         
@@ -153,16 +178,21 @@
             <!-- Chat Widget Button -->
             <button type="button" id="startChatBtn">Chat with AI Agent</button>
         </div>
+        
+        <!-- Helper Text that appears when Chat is clicked -->
+        <div id="chatHelperText">
+            ↘️ Chat Window Opening Below ↘️
+        </div>
 
         <div class="contact-info">
             <span id="lbl_contact">Contact:</span> 
-            <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
+            <a href="mailto:cchew617@gmail.com">cchew617@gmail.com</a>
         </div>
     </div>
 
     <!-- DISCLAIMER FOOTER -->
     <div class="legal-footer">
-        <h4>JasonChew.HDRCtrainer@gmail.com</h4>
+        <h4>cchew617@gmail.com</h4>
         <p>
             <strong>Legal Disclaimer:</strong> This tool is provided for educational and administrative convenience. 
             Users are <strong>solely responsible</strong> for ensuring that their use of this tool does not breach the copyright, 
@@ -188,7 +218,7 @@
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     
     // --- KEY CONFIGURATION ---
-    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR KEY
+    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
     
     // Voice Agent IDs (For Call Button)
     const VOICE_AGENT_MAPPING = {
@@ -304,7 +334,6 @@
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        // Only reload widget if it was ALREADY loaded
         if (isChatLoaded) {
             loadChatWidget(); 
         }
@@ -314,14 +343,12 @@
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
 
-        // 1. Remove existing widget if present
         const oldScript = document.getElementById('retell-widget');
         if (oldScript) oldScript.remove();
         
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
 
-        // 2. Inject new widget script
         const script = document.createElement('script');
         script.id = 'retell-widget'; 
         script.src = 'https://dashboard.retellai.com/retell-widget.js';
@@ -333,20 +360,16 @@
         
         document.body.appendChild(script);
 
-        // 3. AUTO-OPEN HACK: Hunt for the widget's shadow DOM button and click it
+        // AUTO-OPEN HACK
         let attempts = 0;
         const autoOpener = setInterval(() => {
             attempts++;
             const widget = document.querySelector('retell-widget');
             if (widget && widget.shadowRoot) {
-                // Try to find the internal launcher button inside the shadow DOM
                 const btn = widget.shadowRoot.querySelector('button');
                 if (btn) {
-                    btn.click(); // POP! Open the window
+                    btn.click();
                     clearInterval(autoOpener);
-                    
-                    // Hide the Blue Button now that chat is open
-                    document.getElementById('startChatBtn').style.display = 'none';
                     isChatLoaded = true;
                 }
             }
@@ -361,7 +384,7 @@
         container.style.display = chk.checked ? 'block' : 'none';
     };
 
-    // --- FORM VALIDATION HELPER ---
+    // --- FORM VALIDATION ---
     function validateForm() {
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
@@ -388,7 +411,16 @@
             chatBtn.innerText = "Initializing Chat...";
             chatBtn.disabled = true;
 
-            loadChatWidget(); // This will load AND auto-open
+            // Show Helper Text
+            document.getElementById('chatHelperText').style.display = 'block';
+
+            loadChatWidget();
+            
+            // Show Alert Logic
+            setTimeout(() => {
+                alert("Chat Widget Loaded! Please check the bottom right corner.");
+                chatBtn.style.display = 'none'; // Hide button after alert is closed
+            }, 500);
         }
     });
 
