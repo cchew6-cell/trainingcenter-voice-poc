@@ -317,4 +317,240 @@
         document.getElementById('lbl_contact').innerText = t.lbl_contact;
         document.getElementById('opt_default').innerText = t.opt_default;
         document.getElementById('opt_1').innerText = t.opt_1;
-        document.getElementById('opt_2').innerText = t.
+        document.getElementById('opt_2').innerText = t.opt_2;
+        document.getElementById('opt_3').innerText = t.opt_3;
+        
+        document.getElementById('lbl_courses').innerText = t.lbl_courses;
+        document.getElementById('lbl_c1').innerText = t.lbl_c1;
+        document.getElementById('lbl_c2').innerText = t.lbl_c2;
+        document.getElementById('lbl_c3').innerText = t.lbl_c3;
+        document.getElementById('lbl_other').innerText = t.lbl_other;
+
+        const cBtn = document.getElementById('callConfirmBtn');
+        const chatBtn = document.getElementById('startChatBtn');
+        if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
+        if(!chatBtn.disabled) chatBtn.innerText = t.startChatBtn;
+
+        document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
+        if(lang === 'english') document.getElementById('langEN').classList.add('active');
+        if(lang === 'malay') document.getElementById('langMY').classList.add('active');
+        if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
+
+        // Only reload widget if it was ALREADY loaded
+        if (isChatLoaded) {
+            loadChatWidget(); 
+        }
+    }
+
+    // --- DYNAMIC CHAT WIDGET LOADER ---
+    function loadChatWidget() {
+        const agentId = CHAT_AGENT_MAPPING[currentLang];
+
+        // 1. Remove existing widget
+        const oldScript = document.getElementById('retell-widget');
+        if (oldScript) oldScript.remove();
+        
+        const oldWidget = document.querySelector('retell-widget');
+        if (oldWidget) oldWidget.remove();
+
+        // 2. Inject new widget
+        const script = document.createElement('script');
+        script.id = 'retell-widget';
+        script.src = 'https://dashboard.retellai.com/retell-widget.js';
+        script.type = 'module';
+        
+        script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
+        script.setAttribute('data-agent-id', agentId);
+        script.setAttribute('data-title', "Jason Chew AI Assistant");
+        
+        document.body.appendChild(script);
+
+        // 3. UX: Show Notification immediately (No Auto-Clicker)
+        setTimeout(() => {
+            document.getElementById('startChatBtn').style.display = 'none';
+            document.getElementById('chatHelperText').style.display = 'block';
+            isChatLoaded = true;
+            resetIdleTimer();
+        }, 1000);
+    }
+
+    // --- IDLE TIMER LOGIC ---
+    function startIdleWatcher() {
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            if (isChatLoaded) {
+                endChatSession(true); 
+            }
+        }, IDLE_TIMEOUT_MS);
+    }
+
+    function resetIdleTimer() {
+        if (isChatLoaded) {
+            startIdleWatcher();
+        }
+    }
+
+    function endChatSession(showAlert) {
+        // Destroy Widget
+        const oldScript = document.getElementById('retell-widget');
+        if (oldScript) oldScript.remove();
+        const oldWidget = document.querySelector('retell-widget');
+        if (oldWidget) oldWidget.remove();
+
+        isChatLoaded = false;
+        if (idleTimer) clearTimeout(idleTimer);
+
+        // Restore UI
+        const chatBtn = document.getElementById('startChatBtn');
+        const t = translations[currentLang];
+        chatBtn.style.display = 'inline-block';
+        chatBtn.innerText = t.startChatBtn;
+        chatBtn.disabled = false;
+        document.getElementById('chatHelperText').style.display = 'none';
+
+        if (showAlert) {
+            alert("Chat session ended due to inactivity (1 minute).");
+        }
+    }
+
+    ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => 
+        document.addEventListener(evt, resetIdleTimer)
+    );
+
+    // Toggle Other Input
+    window.toggleOtherInput = function() {
+        const chk = document.getElementById('chk_other');
+        const container = document.getElementById('other_input_container');
+        container.style.display = chk.checked ? 'block' : 'none';
+    };
+
+    // --- FORM VALIDATION ---
+    function validateForm() {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const budget = document.getElementById('budget').value;
+        
+        let selectedCourses = false;
+        document.querySelectorAll('input[name="course"]:checked').forEach(() => selectedCourses = true);
+
+        if (!name || !email || !budget) {
+             alert("Please fill out all required fields (Name, Email, Budget).");
+             return false;
+        }
+        if (!selectedCourses) {
+             alert("Please tick at least one course.");
+             return false;
+        }
+        return true;
+    }
+
+    // --- BUTTON 1: CHAT WIDGET LOGIC ---
+    document.getElementById('startChatBtn').addEventListener('click', () => {
+        if (validateForm()) {
+            const chatBtn = document.getElementById('startChatBtn');
+            chatBtn.innerText = "Initializing Chat...";
+            chatBtn.disabled = true;
+            loadChatWidget();
+        }
+    });
+
+    // --- BUTTON 2: VOICE CALL LOGIC ---
+    document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
+
+    function getFormData(actionType) {
+        const selectedAgentId = VOICE_AGENT_MAPPING[currentLang];
+        let selectedCourses = [];
+        document.querySelectorAll('input[name="course"]:checked').forEach((chk) => {
+            if (chk.value === "Other") {
+                const txt = document.getElementById('other_text').value.trim();
+                selectedCourses.push(txt ? "Other: " + txt : "Other");
+            } else selectedCourses.push(chk.value);
+        });
+        const reqStr = selectedCourses.length > 0 ? selectedCourses.join(", ") : "No course selected";
+
+        return {
+            timestamp: new Date().toISOString(),
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            mobile: document.getElementById('mobile').value,
+            budget: document.getElementById('budget').value,
+            requirements: reqStr,
+            formAction: actionType, 
+            chosen_agent_id: selectedAgentId,
+            language_preference: currentLang
+        };
+    }
+    
+    function stopRingtone() {
+        const ringtone = document.getElementById('ringtonePlayer');
+        if(ringtone && !ringtone.paused) {
+            ringtone.pause();
+            ringtone.currentTime = 0;
+        }
+    }
+
+    async function sendFormData(data) {
+        if (!validateForm()) return;
+        const cBtn = document.getElementById('callConfirmBtn');
+        cBtn.disabled = true;
+        cBtn.innerText = "Connecting...";
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data), 
+            });
+
+            let responseData = await response.json().catch(() => ({}));
+            let accessToken = null;
+            if (Array.isArray(responseData) && responseData.length > 0) accessToken = responseData[0].access_token; 
+            else if (responseData.access_token) accessToken = responseData.access_token; 
+
+            if (accessToken) {
+                const ringtone = document.getElementById('ringtonePlayer');
+                if(ringtone) {
+                    ringtone.volume = 0.5;
+                    ringtone.currentTime = 0;
+                    ringtone.play().catch(e => console.log("Auto-play prevented:", e));
+                }
+                if (typeof window.RetellWebClient === 'undefined') {
+                    alert("SDK Loading... try again in 2 seconds.");
+                    resetButtons();
+                    return;
+                }
+                const retellWebClient = new window.RetellWebClient();
+                let isAgentSpeaking = false; 
+
+                retellWebClient.on("call_started", () => {
+                    cBtn.innerText = "Speaking...";
+                    setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); 
+                });
+                retellWebClient.on("update", (update) => {
+                    if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; }
+                });
+                retellWebClient.on("call_ended", () => { stopRingtone(); resetButtons(); alert("Call finished. Thank you!"); });
+                retellWebClient.on("error", (error) => { stopRingtone(); console.error("Retell Error:", error); alert("Connection Error."); resetButtons(); });
+                
+                await retellWebClient.startCall({ accessToken: accessToken });
+            } else {
+                alert("Submission failed. No Token.");
+                resetButtons();
+            }
+        } catch (error) {
+            console.error(error);
+            stopRingtone();
+            alert("Network Error.");
+            resetButtons();
+        }
+    }
+
+    function resetButtons() {
+        const cBtn = document.getElementById('callConfirmBtn');
+        const t = translations[currentLang];
+        cBtn.disabled = false;
+        cBtn.innerText = t.callConfirmBtn;
+    }
+</script>
+</body>
+</html>
