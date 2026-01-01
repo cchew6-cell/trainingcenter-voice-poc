@@ -39,12 +39,9 @@
         #chatHelperText { display: none; margin-top: 15px; padding: 15px; background-color: #e3f2fd; border: 1px solid #2196F3; color: #0d47a1; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center;}
-        
-        /* FOOTER STYLING */
         .legal-footer { margin-top: 40px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; color: #6c757d; line-height: 1.5; text-align: justify; }
         .legal-footer h4 { margin-top: 0; margin-bottom: 8px; font-size: 12px; color: #343a40; text-align: center; }
         .legal-footer strong { color: #555; }
-        
         retell-widget { z-index: 9999 !important; transform: scale(1.3); transform-origin: bottom right; right: 20px !important; bottom: 20px !important; }
     </style>
 </head>
@@ -103,18 +100,13 @@
             <button type="button" id="callConfirmBtn">Speak To AI Agent (Call)</button>
             <button type="button" id="startChatBtn">Chat with AI Agent</button>
         </div>
-        
-        <!-- NOTIFICATION BOX -->
-        <div id="chatHelperText">
-            ✅ Chat Initialized! Please click the icon in the bottom right corner ↘️
-        </div>
-
+        <div id="chatHelperText">✅ Chat Initialized! Please click the icon in the bottom right corner ↘️</div>
         <div class="contact-info">
             <span id="lbl_contact">Contact:</span> <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
         </div>
     </div>
 
-    <!-- DISCLAIMER (Now with IDs for translation) -->
+    <!-- DISCLAIMER -->
     <div class="legal-footer">
         <h4>JasonChew.HDRCtrainer@gmail.com</h4>
         <p>
@@ -137,7 +129,7 @@
     </audio>
 
 <script>
-    // --- TOP LEVEL VARIABLE DECLARATIONS ---
+    // --- CONFIGURATION ---
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
     const IDLE_TIMEOUT_MS = 60000; 
@@ -157,17 +149,17 @@
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_57560d7227f800a4a8b449222b'
+        'chinese': 'agent_f04e08a6c3a28c017b5ece2b0a'   
     };
 
-    // --- TRANSLATIONS (Complete) ---
+    // --- TRANSLATIONS ---
     const translations = {
         english: {
             mainTitle: "Jason Chew's AI Classroom [v3]",
             subTitle: "Training Course Inquiry Form",
             lbl_name: "Name *",
             lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number *",
+            lbl_mobile: "Mobile Phone Number [example: +6012345678] *",
             lbl_budget: "Budget *",
             lbl_courses: "Please tick the training course(s) that you are interested in: *",
             lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
@@ -181,7 +173,6 @@
             opt_1: "Below RM 4,000",
             opt_2: "RM 4,000 to RM 7,000",
             opt_3: "RM 7,000 to RM 11,000",
-            // New Localization Keys
             chatNotification: "✅ Chat Initialized! Please click the icon in the bottom right corner ↘️",
             widgetTitle: "Jason Chew AI Assistant",
             lbl_disclaimer_title: "Legal Disclaimer:",
@@ -195,7 +186,7 @@
             subTitle: "Borang Pertanyaan Kursus Latihan",
             lbl_name: "Nama *",
             lbl_email: "E-mel *",
-            lbl_mobile: "Nombor Telefon Bimbit *",
+            lbl_mobile: "Nombor Telefon Bimbit  [contoh: +6012345678] *",
             lbl_budget: "Bajet *",
             lbl_courses: "Sila tanda kursus latihan yang anda berminat: *",
             lbl_c1: "Tingkatkan Kecekapan Perusahaan Dengan Kuasa Gemini AI (Kursus Separuh Hari)",
@@ -209,7 +200,6 @@
             opt_1: "Bawah RM 4,000",
             opt_2: "RM 4,000 hingga RM 7,000",
             opt_3: "RM 7,000 hingga RM 11,000",
-            // Malay Localization
             chatNotification: "✅ Sembang Bermula! Sila klik ikon di penjuru bawah kanan ↘️",
             widgetTitle: "Pembantu AI Kelas AI Jason Chew",
             lbl_disclaimer_title: "Penafian Undang-undang:",
@@ -223,7 +213,7 @@
             subTitle: "培训课程咨询表",
             lbl_name: "姓名 *",
             lbl_email: "电子邮箱 *",
-            lbl_mobile: "手机号码 *",
+            lbl_mobile: "手机号码  [例如：+6012345678] *",
             lbl_budget: "预算 *",
             lbl_courses: "请勾选您感兴趣的培训课程：*",
             lbl_c1: "利用 Gemini AI 提升企业效率 (半天课程)",
@@ -237,7 +227,6 @@
             opt_1: "RM 4,000 以下",
             opt_2: "RM 4,000 至 RM 7,000",
             opt_3: "RM 7,000 至 RM 11,000",
-            // Chinese Localization
             chatNotification: "✅ 聊天已启动！请点击右下角的图标 ↘️",
             widgetTitle: "Jason Chew AI 智慧教室 - AI 助手",
             lbl_disclaimer_title: "法律免责声明：",
@@ -296,7 +285,7 @@
         }
     }
 
-    // --- HELPER TO GET COURSES ---
+    // --- HELPER: GET SELECTED COURSES ---
     function getSelectedCoursesString() {
         let selectedCourses = [];
         document.querySelectorAll('input[name="course"]:checked').forEach((chk) => {
@@ -311,13 +300,12 @@
     // --- DYNAMIC CHAT WIDGET LOADER ---
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
-        // Get the translated title for the widget window
         const widgetTitle = translations[currentLang].widgetTitle; 
 
         // 1. Remove existing widget
         endChatSession(false);
 
-        // 2. Prepare Data
+        // 2. Prepare Data for Injection
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -334,12 +322,12 @@
         
         script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
         script.setAttribute('data-agent-id', agentId);
-        
-        // Use the localized title here
         script.setAttribute('data-title', widgetTitle);
         
-        // Pass variables
-        script.setAttribute('data-retell-llm-dynamic-variables', JSON.stringify(formData));
+        // --- CORRECT ATTRIBUTES FOR VARIABLE INJECTION ---
+        const jsonVars = JSON.stringify(formData);
+        script.setAttribute('data-dynamic-variables', jsonVars); 
+        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
         
         document.body.appendChild(script);
 
@@ -433,25 +421,55 @@
         const cBtn = document.getElementById('callConfirmBtn');
         cBtn.disabled = true;
         cBtn.innerText = "Connecting...";
+
         try {
-            const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data), 
+            });
+
             let responseData = await response.json().catch(() => ({}));
             let accessToken = null;
             if (Array.isArray(responseData) && responseData.length > 0) accessToken = responseData[0].access_token; 
             else if (responseData.access_token) accessToken = responseData.access_token; 
+
             if (accessToken) {
                 const ringtone = document.getElementById('ringtonePlayer');
-                if(ringtone) { ringtone.volume = 0.5; ringtone.currentTime = 0; ringtone.play().catch(e => console.log("Auto-play prevented:", e)); }
-                if (typeof window.RetellWebClient === 'undefined') { alert("SDK Loading... try again."); resetButtons(); return; }
+                if(ringtone) {
+                    ringtone.volume = 0.5;
+                    ringtone.currentTime = 0;
+                    ringtone.play().catch(e => console.log("Auto-play prevented:", e));
+                }
+                if (typeof window.RetellWebClient === 'undefined') {
+                    alert("SDK Loading... try again in 2 seconds.");
+                    resetButtons();
+                    return;
+                }
                 const retellWebClient = new window.RetellWebClient();
                 let isAgentSpeaking = false; 
-                retellWebClient.on("call_started", () => { cBtn.innerText = "Speaking..."; setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); });
-                retellWebClient.on("update", (update) => { if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; } });
+
+                retellWebClient.on("call_started", () => {
+                    cBtn.innerText = "Speaking...";
+                    setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); 
+                });
+                retellWebClient.on("update", (update) => {
+                    if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; }
+                });
                 retellWebClient.on("call_ended", () => { stopRingtone(); resetButtons(); alert("Call finished. Thank you!"); });
                 retellWebClient.on("error", (error) => { stopRingtone(); console.error("Retell Error:", error); alert("Connection Error."); resetButtons(); });
+                
                 await retellWebClient.startCall({ accessToken: accessToken });
-            } else { alert("Submission failed. No Token."); resetButtons(); }
-        } catch (error) { console.error(error); stopRingtone(); alert("Network Error."); resetButtons(); }
+            } else {
+                alert("Submission failed. No Token.");
+                resetButtons();
+            }
+        } catch (error) {
+            console.error(error);
+            stopRingtone();
+            alert("Network Error.");
+            resetButtons();
+        }
     }
 
     function resetButtons() {
