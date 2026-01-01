@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jason Chew's AI Classroom [v3]</title>
     
-    <!-- Retell Call SDK -->
+    <!-- Retell Call SDK (For Voice) -->
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
@@ -37,11 +37,11 @@
         .checkbox-item input[type="checkbox"] { width: auto; margin-top: 3px; }
         #other_input_container { margin-top: 5px; margin-left: 25px; display: none; }
         
-        /* BUTTON GROUP (Side by Side) */
+        /* BUTTON GROUP */
         .class-button-group { display: flex; gap: 10px; margin-top: 25px; }
         
         button { 
-            flex: 1; /* Makes buttons equal width */
+            flex: 1; 
             padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; 
         }
         
@@ -49,7 +49,7 @@
         #callConfirmBtn:hover { background-color: #d32f2f; }
         #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
 
-        #startChatBtn { background-color: #2196F3; } /* Blue for Chat */
+        #startChatBtn { background-color: #2196F3; } 
         #startChatBtn:hover { background-color: #1976D2; }
         #startChatBtn:disabled { background-color: #90CAF9; cursor: not-allowed; }
 
@@ -67,13 +67,8 @@
             line-height: 1.5;
             text-align: justify;
         }
-        .legal-footer h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: #343a40;
-            text-align: center;
-        }
+        .legal-footer h4 { margin-top: 0; margin-bottom: 8px; font-size: 12px; color: #343a40; text-align: center; }
+        .legal-footer strong { color: #555; }
     </style>
 </head>
 <body>
@@ -155,7 +150,7 @@
         <div class="class-button-group">
             <!-- WebRTC Call Button -->
             <button type="button" id="callConfirmBtn">Speak To AI Agent (Call)</button>
-            <!-- Chat Widget Button (New) -->
+            <!-- Chat Widget Button -->
             <button type="button" id="startChatBtn">Chat with AI Agent</button>
         </div>
 
@@ -177,6 +172,10 @@
             Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, 
             unauthorized data usage, or legal consequences arising from the actions of the user.
         </p>
+        <p>
+            <strong>Privacy Notice:</strong> Please be advised that all voice calls and chat sessions may be recorded 
+            for training and quality assurance purposes. By using these features, you consent to such recording and data processing.
+        </p>
     </div>
 
     <!-- AUDIO PLAYER -->
@@ -189,7 +188,7 @@
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     
     // --- KEY CONFIGURATION ---
-    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
+    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR KEY
     
     // Voice Agent IDs (For Call Button)
     const VOICE_AGENT_MAPPING = {
@@ -198,13 +197,11 @@
         'chinese': 'agent_798042308572cdcdae32b94241'   
     };
 
-    // Chat Agent IDs (For Chat Button) - PASTE NEW IDs IF YOU CREATED THEM
-    // If you haven't created separate chat agents yet, you can temporarily use Voice IDs here to test,
-    // but remember Retell prefers separate IDs.
+    // Chat Agent IDs (For Chat Button) - PASTE NEW IDs HERE
     const CHAT_AGENT_MAPPING = {
-        'english': 'agent_53bfb2a24ce775fc88923be52e', 
-        'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_57560d7227f800a4a8b449222b'   
+        'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
+        'malay':   'agent_5b1878d8340797676edfb17e08',    
+        'chinese': 'agent_798042308572cdcdae32b94241'   
     };
 
     // --- TRANSLATIONS ---
@@ -214,7 +211,7 @@
             subTitle: "Training Course Inquiry Form",
             lbl_name: "Name *",
             lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number * [sample:  +60123456789]",
+            lbl_mobile: "Mobile Phone Number *",
             lbl_budget: "Budget *",
             lbl_courses: "Please tick the training course(s) that you are interested in: *",
             lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
@@ -272,7 +269,7 @@
     };
 
     let currentLang = 'english';
-    let isChatLoaded = false; // Flag to track if chat is active
+    let isChatLoaded = false;
 
     // --- LANGUAGE SWITCHING ---
     function setLanguage(lang) {
@@ -290,6 +287,7 @@
         document.getElementById('opt_1').innerText = t.opt_1;
         document.getElementById('opt_2').innerText = t.opt_2;
         document.getElementById('opt_3').innerText = t.opt_3;
+        
         document.getElementById('lbl_courses').innerText = t.lbl_courses;
         document.getElementById('lbl_c1').innerText = t.lbl_c1;
         document.getElementById('lbl_c2').innerText = t.lbl_c2;
@@ -306,7 +304,7 @@
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        // Only reload widget if it was already loaded by the user
+        // Only reload widget if it was ALREADY loaded
         if (isChatLoaded) {
             loadChatWidget(); 
         }
@@ -316,16 +314,16 @@
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
 
-        // 1. Remove existing
+        // 1. Remove existing widget if present
         const oldScript = document.getElementById('retell-widget');
         if (oldScript) oldScript.remove();
         
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
 
-        // 2. Inject new
+        // 2. Inject new widget script
         const script = document.createElement('script');
-        script.id = 'retell-widget';
+        script.id = 'retell-widget'; 
         script.src = 'https://dashboard.retellai.com/retell-widget.js';
         script.type = 'module';
         
@@ -334,7 +332,26 @@
         script.setAttribute('data-title', 'Jason Chew AI Assistant');
         
         document.body.appendChild(script);
-        isChatLoaded = true;
+
+        // 3. AUTO-OPEN HACK: Hunt for the widget's shadow DOM button and click it
+        let attempts = 0;
+        const autoOpener = setInterval(() => {
+            attempts++;
+            const widget = document.querySelector('retell-widget');
+            if (widget && widget.shadowRoot) {
+                // Try to find the internal launcher button inside the shadow DOM
+                const btn = widget.shadowRoot.querySelector('button');
+                if (btn) {
+                    btn.click(); // POP! Open the window
+                    clearInterval(autoOpener);
+                    
+                    // Hide the Blue Button now that chat is open
+                    document.getElementById('startChatBtn').style.display = 'none';
+                    isChatLoaded = true;
+                }
+            }
+            if (attempts > 30) clearInterval(autoOpener); 
+        }, 500);
     }
 
     // Toggle Other Input
@@ -364,38 +381,30 @@
         return true;
     }
 
-    // --- BUTTON EVENT LISTENERS ---
-
-    // 1. CHAT BUTTON LOGIC
+    // --- BUTTON 1: CHAT WIDGET LOGIC ---
     document.getElementById('startChatBtn').addEventListener('click', () => {
         if (validateForm()) {
-            loadChatWidget();
-            alert("Chat Widget Loaded! Look for the icon in the bottom right corner.");
-            document.getElementById('startChatBtn').style.display = 'none'; // Hide button after load
+            const chatBtn = document.getElementById('startChatBtn');
+            chatBtn.innerText = "Initializing Chat...";
+            chatBtn.disabled = true;
+
+            loadChatWidget(); // This will load AND auto-open
         }
     });
 
-    // 2. CALL BUTTON LOGIC
+    // --- BUTTON 2: VOICE CALL LOGIC ---
     document.getElementById('callConfirmBtn').addEventListener('click', () => sendFormData(getFormData('Call To Confirm (AI Agent)')));
 
-
-    // --- DATA GATHERING FOR CALL ---
     function getFormData(actionType) {
         const selectedAgentId = VOICE_AGENT_MAPPING[currentLang];
-        
         let selectedCourses = [];
-        const checkboxes = document.querySelectorAll('input[name="course"]:checked');
-        checkboxes.forEach((checkbox) => {
-            if (checkbox.value === "Other") {
-                const otherText = document.getElementById('other_text').value.trim();
-                if (otherText) selectedCourses.push("Other: " + otherText);
-                else selectedCourses.push("Other");
-            } else {
-                selectedCourses.push(checkbox.value);
-            }
+        document.querySelectorAll('input[name="course"]:checked').forEach((chk) => {
+            if (chk.value === "Other") {
+                const txt = document.getElementById('other_text').value.trim();
+                selectedCourses.push(txt ? "Other: " + txt : "Other");
+            } else selectedCourses.push(chk.value);
         });
-
-        const requirementsString = selectedCourses.length > 0 ? selectedCourses.join(", ") : "No specific course selected";
+        const reqStr = selectedCourses.length > 0 ? selectedCourses.join(", ") : "No course selected";
 
         return {
             timestamp: new Date().toISOString(),
@@ -403,14 +412,13 @@
             email: document.getElementById('email').value,
             mobile: document.getElementById('mobile').value,
             budget: document.getElementById('budget').value,
-            requirements: requirementsString,
+            requirements: reqStr,
             formAction: actionType, 
             chosen_agent_id: selectedAgentId,
             language_preference: currentLang
         };
     }
     
-    // --- CALL SENDING LOGIC ---
     function stopRingtone() {
         const ringtone = document.getElementById('ringtonePlayer');
         if(ringtone && !ringtone.paused) {
@@ -420,8 +428,7 @@
     }
 
     async function sendFormData(data) {
-        if (!validateForm()) return; // Re-use validation function
-
+        if (!validateForm()) return;
         const cBtn = document.getElementById('callConfirmBtn');
         cBtn.disabled = true;
         cBtn.innerText = "Connecting...";
@@ -435,11 +442,8 @@
 
             let responseData = await response.json().catch(() => ({}));
             let accessToken = null;
-            if (Array.isArray(responseData) && responseData.length > 0) {
-                accessToken = responseData[0].access_token; 
-            } else if (responseData.access_token) {
-                accessToken = responseData.access_token; 
-            }
+            if (Array.isArray(responseData) && responseData.length > 0) accessToken = responseData[0].access_token; 
+            else if (responseData.access_token) accessToken = responseData.access_token; 
 
             if (accessToken) {
                 const ringtone = document.getElementById('ringtonePlayer');
@@ -448,47 +452,27 @@
                     ringtone.currentTime = 0;
                     ringtone.play().catch(e => console.log("Auto-play prevented:", e));
                 }
-
                 if (typeof window.RetellWebClient === 'undefined') {
                     alert("SDK Loading... try again in 2 seconds.");
                     resetButtons();
                     return;
                 }
-                
                 const retellWebClient = new window.RetellWebClient();
                 let isAgentSpeaking = false; 
 
                 retellWebClient.on("call_started", () => {
                     cBtn.innerText = "Speaking...";
-                    setTimeout(() => {
-                        if(!isAgentSpeaking) stopRingtone();
-                    }, 60000); 
+                    setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); 
                 });
-
                 retellWebClient.on("update", (update) => {
-                    if (!isAgentSpeaking) {
-                        stopRingtone();
-                        isAgentSpeaking = true;
-                    }
+                    if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; }
                 });
-                
-                retellWebClient.on("call_ended", () => {
-                    stopRingtone();
-                    resetButtons();
-                    alert("Call finished. Thank you!");
-                });
-                
-                retellWebClient.on("error", (error) => {
-                    stopRingtone();
-                    console.error("Retell Error:", error);
-                    alert("Connection Error.");
-                    resetButtons();
-                });
+                retellWebClient.on("call_ended", () => { stopRingtone(); resetButtons(); alert("Call finished. Thank you!"); });
+                retellWebClient.on("error", (error) => { stopRingtone(); console.error("Retell Error:", error); alert("Connection Error."); resetButtons(); });
                 
                 await retellWebClient.startCall({ accessToken: accessToken });
-
             } else {
-                alert("Submission failed. No Token received.");
+                alert("Submission failed. No Token.");
                 resetButtons();
             }
         } catch (error) {
@@ -505,7 +489,6 @@
         cBtn.disabled = false;
         cBtn.innerText = t.callConfirmBtn;
     }
-
 </script>
 </body>
 </html>
