@@ -1,140 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jason Chew's AI Classroom [v3]</title>
-    
-    <!-- Retell Call SDK -->
-    <script type="module">
-        import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
-        window.RetellWebClient = RetellWebClient;
-    </script>
-    
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; padding-bottom: 60px; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        .brand-section { display: flex; align-items: center; gap: 15px; }
-        .brand-section h1 { margin: 0; font-size: 24px; line-height: 1.2; }
-        .profile-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #eee; }
-        .lang-switcher { font-size: 18px; font-weight: bold; color: #555; cursor: pointer; }
-        .lang-option { padding: 0 5px; transition: color 0.3s; }
-        .lang-option:hover { color: #000; }
-        .lang-option.active { color: #d32f2f; text-decoration: underline; } 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .checkbox-container { display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
-        .checkbox-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; }
-        .checkbox-item input[type="checkbox"] { width: auto; margin-top: 3px; }
-        #other_input_container { margin-top: 5px; margin-left: 25px; display: none; }
-        .class-button-group { display: flex; gap: 10px; margin-top: 25px; }
-        button { width: 100%; padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; }
-        #callConfirmBtn { background-color: #f44336; } 
-        #callConfirmBtn:hover { background-color: #d32f2f; }
-        #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
-        #startChatBtn { background-color: #2196F3; } 
-        #startChatBtn:hover { background-color: #1976D2; }
-        #startChatBtn:disabled { background-color: #90CAF9; cursor: not-allowed; }
-        #chatHelperText { display: none; margin-top: 15px; padding: 15px; background-color: #e3f2fd; border: 1px solid #2196F3; color: #0d47a1; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center;}
-        .legal-footer { margin-top: 40px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; color: #6c757d; line-height: 1.5; text-align: justify; }
-        .legal-footer h4 { margin-top: 0; margin-bottom: 8px; font-size: 12px; color: #343a40; text-align: center; }
-        .legal-footer strong { color: #555; }
-        retell-widget { z-index: 9999 !important; transform: scale(1.3); transform-origin: bottom right; right: 20px !important; bottom: 20px !important; }
-    </style>
-</head>
-<body>
-
-    <!-- HEADER -->
-    <div class="header-container">
-        <div class="brand-section">
-            <div class="titles">
-                <h1 id="mainTitle">Jason Chew's AI Classroom [v3]</h1>
-                <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
-            </div>
-            <img src="header-image.png" onerror="this.style.display='none'" alt="Jason Chew" class="profile-img"> 
-        </div>
-        <div class="lang-switcher">
-            <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
-            <span class="lang-option" onclick="setLanguage('malay')" id="langMY">MY</span>
-            <span class="lang-option" onclick="setLanguage('chinese')" id="langCN">中文</span>
-        </div>
-    </div>
-
-    <!-- FORM -->
-    <div id="inquiryForm">
-        <div class="form-group">
-            <label for="name" id="lbl_name">Name *</label>
-            <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-            <label for="email" id="lbl_email">Email *</label>
-            <input type="email" id="email" required>
-        </div>
-        <div class="form-group">
-            <label for="mobile" id="lbl_mobile">Mobile Phone Number  [example: +6012345678] *</label>
-            <input type="tel" id="mobile" required placeholder="+60123456789">
-        </div>
-        <div class="form-group">
-            <label for="budget" id="lbl_budget">Budget *</label>
-            <select id="budget" name="budget" required>
-                <option value="" disabled selected id="opt_default">Select an option...</option>
-                <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
-                <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
-                <option value="RM 7,000 to RM 11,000" id="opt_3">RM 7,000 to RM 11,000</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label id="lbl_courses">Please tick the training course(s) that you are interested in: *</label>
-            <div class="checkbox-container">
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Gemini AI (Half Day)"><span id="lbl_c1">Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)</span></label>
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Google AI Suite (Full Day)"><span id="lbl_c2">Mastering Google AI Suite For Transformative Office Productivity (Full Day course)</span></label>
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Customer Service AI (Half Day)"><span id="lbl_c3">AI-Enhanced Customer Service Excellence (Half Day course)</span></label>
-                <label class="checkbox-item"><input type="checkbox" id="chk_other" name="course" value="Other" onchange="toggleOtherInput()"><span id="lbl_other">Other</span></label>
-                <div id="other_input_container"><input type="text" id="other_text" placeholder="Please specify..."></div>
-            </div>
-        </div>
-        <div class="class-button-group">
-            <button type="button" id="callConfirmBtn">Speak To AI Agent (Call)</button>
-            <button type="button" id="startChatBtn">Chat with AI Agent</button>
-        </div>
-        <div id="chatHelperText">✅ Chat Initialized! Please click the icon in the bottom right corner ↘️</div>
-        <div class="contact-info">
-            <span id="lbl_contact">Contact:</span> <a href="mailto:JasonChew.HDRCtrainer@gmail.com">JasonChew.HDRCtrainer@gmail.com</a>
-        </div>
-    </div>
-
-    <!-- DISCLAIMER -->
-    <div class="legal-footer">
-        <h4>JasonChew.HDRCtrainer@gmail.com</h4>
-        <p>
-            <strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> 
-            <span id="lbl_disclaimer_text">This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.</span>
-        </p>
-        <p>
-            <span id="lbl_owner_disclaimer">Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.</span>
-        </p>
-        <p>
-            <strong id="lbl_privacy_title">Privacy Notice:</strong> 
-            <span id="lbl_privacy_text">Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing.</span>
-        </p>
-    </div>
-
-    <!-- AUDIO PLAYER -->
-    <audio id="ringtonePlayer" loop>
-        <source src="ring.mp3" type="audio/mpeg">
-        <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
-    </audio>
-
 <script>
-    // --- CONFIGURATION ---
+    // --------------------------------------------------------------------------------
+    // 1. CONFIGURATION
+    // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
     const IDLE_TIMEOUT_MS = 60000; 
 
-    let currentLang = 'english';
+    // Global State
+    let currentLang = 'english'; 
     let isChatLoaded = false;
     let idleTimer = null;
     
@@ -149,7 +22,7 @@
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_f04e08a6c3a28c017b5ece2b0a'   
+        'chinese': 'agent_57560d7227f800a4a8b449222b'   
     };
 
     // --- TRANSLATIONS ---
@@ -159,7 +32,7 @@
             subTitle: "Training Course Inquiry Form",
             lbl_name: "Name *",
             lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number [example: +6012345678] *",
+            lbl_mobile: "Mobile Phone Number  [example: +6012345678]*",
             lbl_budget: "Budget *",
             lbl_courses: "Please tick the training course(s) that you are interested in: *",
             lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
@@ -186,7 +59,7 @@
             subTitle: "Borang Pertanyaan Kursus Latihan",
             lbl_name: "Nama *",
             lbl_email: "E-mel *",
-            lbl_mobile: "Nombor Telefon Bimbit  [contoh: +6012345678] *",
+            lbl_mobile: "Nombor Telefon Bimbit  [contoh: +6012345678]*",
             lbl_budget: "Bajet *",
             lbl_courses: "Sila tanda kursus latihan yang anda berminat: *",
             lbl_c1: "Tingkatkan Kecekapan Perusahaan Dengan Kuasa Gemini AI (Kursus Separuh Hari)",
@@ -213,7 +86,7 @@
             subTitle: "培训课程咨询表",
             lbl_name: "姓名 *",
             lbl_email: "电子邮箱 *",
-            lbl_mobile: "手机号码  [例如：+6012345678] *",
+            lbl_mobile: "手机号码  [例如：+6012345678]*",
             lbl_budget: "预算 *",
             lbl_courses: "请勾选您感兴趣的培训课程：*",
             lbl_c1: "利用 Gemini AI 提升企业效率 (半天课程)",
@@ -237,12 +110,11 @@
         }
     };
 
-    // --- LANGUAGE SWITCHING ---
     function setLanguage(lang) {
         currentLang = lang;
         const t = translations[lang];
 
-        // Main UI
+        // Update Text Logic...
         document.getElementById('mainTitle').innerText = t.mainTitle;
         document.getElementById('subTitle').innerText = t.subTitle;
         document.getElementById('lbl_name').innerText = t.lbl_name;
@@ -261,7 +133,7 @@
         document.getElementById('lbl_c3').innerText = t.lbl_c3;
         document.getElementById('lbl_other').innerText = t.lbl_other;
 
-        // Footer & Notification
+        // Footer Updates
         document.getElementById('chatHelperText').innerText = t.chatNotification;
         document.getElementById('lbl_disclaimer_title').innerText = t.lbl_disclaimer_title;
         document.getElementById('lbl_disclaimer_text').innerText = t.lbl_disclaimer_text;
@@ -279,10 +151,7 @@
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        // Only reload widget if it was ALREADY loaded
-        if (isChatLoaded) {
-            loadChatWidget(); 
-        }
+        if (isChatLoaded) loadChatWidget(); 
     }
 
     // --- HELPER: GET SELECTED COURSES ---
@@ -302,10 +171,10 @@
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // 1. Remove existing widget
+        // 1. Remove existing
         endChatSession(false);
 
-        // 2. Prepare Data for Injection
+        // 2. Prepare Data
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -324,10 +193,9 @@
         script.setAttribute('data-agent-id', agentId);
         script.setAttribute('data-title', widgetTitle);
         
-        // --- CORRECT ATTRIBUTES FOR VARIABLE INJECTION ---
-        const jsonVars = JSON.stringify(formData);
-        script.setAttribute('data-dynamic-variables', jsonVars); 
-        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
+        // --- SAFE INJECTION ---
+        // We use only the official attribute now
+        script.setAttribute('data-retell-llm-dynamic-variables', JSON.stringify(formData));
         
         document.body.appendChild(script);
 
@@ -359,12 +227,14 @@
         if (oldWidget) oldWidget.remove();
         isChatLoaded = false;
         if (idleTimer) clearTimeout(idleTimer);
+        
         const chatBtn = document.getElementById('startChatBtn');
         const t = translations[currentLang];
         chatBtn.style.display = 'inline-block';
         chatBtn.innerText = t.startChatBtn;
         chatBtn.disabled = false;
         document.getElementById('chatHelperText').style.display = 'none';
+        
         if (showAlert) alert("Chat session ended due to inactivity (1 minute).");
     }
     ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => document.addEventListener(evt, resetIdleTimer));
@@ -421,55 +291,25 @@
         const cBtn = document.getElementById('callConfirmBtn');
         cBtn.disabled = true;
         cBtn.innerText = "Connecting...";
-
         try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data), 
-            });
-
+            const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             let responseData = await response.json().catch(() => ({}));
             let accessToken = null;
             if (Array.isArray(responseData) && responseData.length > 0) accessToken = responseData[0].access_token; 
             else if (responseData.access_token) accessToken = responseData.access_token; 
-
             if (accessToken) {
                 const ringtone = document.getElementById('ringtonePlayer');
-                if(ringtone) {
-                    ringtone.volume = 0.5;
-                    ringtone.currentTime = 0;
-                    ringtone.play().catch(e => console.log("Auto-play prevented:", e));
-                }
-                if (typeof window.RetellWebClient === 'undefined') {
-                    alert("SDK Loading... try again in 2 seconds.");
-                    resetButtons();
-                    return;
-                }
+                if(ringtone) { ringtone.volume = 0.5; ringtone.currentTime = 0; ringtone.play().catch(e => console.log("Auto-play prevented:", e)); }
+                if (typeof window.RetellWebClient === 'undefined') { alert("SDK Loading... try again."); resetButtons(); return; }
                 const retellWebClient = new window.RetellWebClient();
                 let isAgentSpeaking = false; 
-
-                retellWebClient.on("call_started", () => {
-                    cBtn.innerText = "Speaking...";
-                    setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); 
-                });
-                retellWebClient.on("update", (update) => {
-                    if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; }
-                });
+                retellWebClient.on("call_started", () => { cBtn.innerText = "Speaking..."; setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); });
+                retellWebClient.on("update", (update) => { if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; } });
                 retellWebClient.on("call_ended", () => { stopRingtone(); resetButtons(); alert("Call finished. Thank you!"); });
                 retellWebClient.on("error", (error) => { stopRingtone(); console.error("Retell Error:", error); alert("Connection Error."); resetButtons(); });
-                
                 await retellWebClient.startCall({ accessToken: accessToken });
-            } else {
-                alert("Submission failed. No Token.");
-                resetButtons();
-            }
-        } catch (error) {
-            console.error(error);
-            stopRingtone();
-            alert("Network Error.");
-            resetButtons();
-        }
+            } else { alert("Submission failed. No Token."); resetButtons(); }
+        } catch (error) { console.error(error); stopRingtone(); alert("Network Error."); resetButtons(); }
     }
 
     function resetButtons() {
