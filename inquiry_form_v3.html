@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jason Chew's AI Classroom [v3]</title>
     
-    <!-- Retell Call SDK (For Voice) -->
+    <!-- Retell Call SDK -->
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
@@ -121,9 +121,10 @@
     </audio>
 
 <script>
+    // --- TOP LEVEL VARIABLE DECLARATIONS ---
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR KEY
-    const IDLE_TIMEOUT_MS = 60000; // 1 Minute
+    const IDLE_TIMEOUT_MS = 60000; 
 
     let currentLang = 'english';
     let isChatLoaded = false;
@@ -172,6 +173,7 @@
         const chatBtn = document.getElementById('startChatBtn');
         if(!cBtn.disabled) cBtn.innerText = t.callConfirmBtn;
         if(!chatBtn.disabled) chatBtn.innerText = t.startChatBtn;
+        
         document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('active'));
         if(lang === 'english') document.getElementById('langEN').classList.add('active');
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
@@ -180,7 +182,7 @@
         if (isChatLoaded) loadChatWidget(); 
     }
 
-    // --- HELPER FUNCTION TO GET COURSES ---
+    // --- HELPER TO GET COURSES ---
     function getSelectedCoursesString() {
         let selectedCourses = [];
         document.querySelectorAll('input[name="course"]:checked').forEach((chk) => {
@@ -197,7 +199,7 @@
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         endChatSession(false);
 
-        // 1. Prepare Data
+        // 1. Prepare Data for Injection (Use Correct Attribute!)
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -206,7 +208,7 @@
             "course_requirement": getSelectedCoursesString()
         };
 
-        // 2. Inject Script with Variables
+        // 2. Inject Script
         const script = document.createElement('script');
         script.id = 'retell-widget';
         script.src = 'https://dashboard.retellai.com/retell-widget.js';
@@ -214,14 +216,14 @@
         
         script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
         script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-title', "Jason Chew AI Assistant");
+        script.setAttribute('data-title', "Jason Chew AI's Classroom AI Chat Agent");
         
-        // --- THIS LINE INJECTS THE VARIABLES ---
-        script.setAttribute('data-retell-llm-dynamic-variables', JSON.stringify(formData));
+        // --- THIS IS THE CORRECT ATTRIBUTE FOR WIDGETS ---
+        script.setAttribute('data-dynamic', JSON.stringify(formData));
         
         document.body.appendChild(script);
 
-        // 3. UI Update (No Auto-Click)
+        // 3. UI Update (Wait for load, NO Auto-Click)
         setTimeout(() => {
             document.getElementById('startChatBtn').style.display = 'none';
             document.getElementById('chatHelperText').style.display = 'block';
