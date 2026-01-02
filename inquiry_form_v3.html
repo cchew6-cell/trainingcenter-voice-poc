@@ -151,27 +151,28 @@
         <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
     </audio>
 
+  
 <script>
     // --------------------------------------------------------------------------------
     // 1. CONFIGURATION
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
-    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR PUBLIC KEY
-    const IDLE_TIMEOUT_MS = 60000; // 1 Minute
+    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
+    const IDLE_TIMEOUT_MS = 60000; 
 
     // Global State
     let currentLang = 'english'; 
     let isChatLoaded = false;
     let idleTimer = null;
     
-    // Voice Agent IDs (Red Button)
+    // Voice Agent IDs
     const VOICE_AGENT_MAPPING = {
         'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
         'malay':   'agent_5b1878d8340797676edfb17e08',    
         'chinese': 'agent_798042308572cdcdae32b94241'   
     };
 
-    // Chat Agent IDs (Blue Button)
+    // Chat Agent IDs
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
@@ -286,7 +287,7 @@
         document.getElementById('lbl_c3').innerText = t.lbl_c3;
         document.getElementById('lbl_other').innerText = t.lbl_other;
 
-        // Footer & Notification Updates
+        // Footer & Notification
         document.getElementById('chatHelperText').innerText = t.chatNotification;
         document.getElementById('lbl_disclaimer_title').innerText = t.lbl_disclaimer_title;
         document.getElementById('lbl_disclaimer_text').innerText = t.lbl_disclaimer_text;
@@ -304,7 +305,9 @@
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        if (isChatLoaded) loadChatWidget(); 
+        if (isChatLoaded) {
+            loadChatWidget(); 
+        }
     }
 
     // --- HELPER: GET SELECTED COURSES ---
@@ -324,10 +327,14 @@
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // 1. Remove existing
+        // 1. CLEAR MEMORY & REMOVE WIDGET (THE FIX)
+        // This clears the "Local Storage" so Retell forgets the previous session
+        localStorage.removeItem('retell-chat-id'); 
+        localStorage.clear(); // Nuclear option to ensure a fresh session
+        
         endChatSession(false);
 
-        // 2. Prepare Data (Context Injection)
+        // 2. Prepare Data for Injection
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -335,6 +342,8 @@
             "budget_requirement": document.getElementById('budget').value || "Not Specified",
             "course_requirement": getSelectedCoursesString()
         };
+        
+        console.log("Injecting Variables:", formData); // Check Console for this!
 
         // 3. Inject Script
         const script = document.createElement('script');
@@ -346,8 +355,7 @@
         script.setAttribute('data-agent-id', agentId);
         script.setAttribute('data-title', widgetTitle);
         
-        // --- SAFE INJECTION FIX ---
-        // Setting both attributes to ensure compatibility with Retell Widget
+        // Use BOTH attribute names to be safe
         const jsonVars = JSON.stringify(formData);
         script.setAttribute('data-dynamic-variables', jsonVars); 
         script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
@@ -444,55 +452,25 @@
         const cBtn = document.getElementById('callConfirmBtn');
         cBtn.disabled = true;
         cBtn.innerText = "Connecting...";
-
         try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data), 
-            });
-
+            const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
             let responseData = await response.json().catch(() => ({}));
             let accessToken = null;
             if (Array.isArray(responseData) && responseData.length > 0) accessToken = responseData[0].access_token; 
             else if (responseData.access_token) accessToken = responseData.access_token; 
-
             if (accessToken) {
                 const ringtone = document.getElementById('ringtonePlayer');
-                if(ringtone) {
-                    ringtone.volume = 0.5;
-                    ringtone.currentTime = 0;
-                    ringtone.play().catch(e => console.log("Auto-play prevented:", e));
-                }
-                if (typeof window.RetellWebClient === 'undefined') {
-                    alert("SDK Loading... try again in 2 seconds.");
-                    resetButtons();
-                    return;
-                }
+                if(ringtone) { ringtone.volume = 0.5; ringtone.currentTime = 0; ringtone.play().catch(e => console.log("Auto-play prevented:", e)); }
+                if (typeof window.RetellWebClient === 'undefined') { alert("SDK Loading... try again."); resetButtons(); return; }
                 const retellWebClient = new window.RetellWebClient();
                 let isAgentSpeaking = false; 
-
-                retellWebClient.on("call_started", () => {
-                    cBtn.innerText = "Speaking...";
-                    setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); 
-                });
-                retellWebClient.on("update", (update) => {
-                    if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; }
-                });
+                retellWebClient.on("call_started", () => { cBtn.innerText = "Speaking..."; setTimeout(() => { if(!isAgentSpeaking) stopRingtone(); }, 60000); });
+                retellWebClient.on("update", (update) => { if (!isAgentSpeaking) { stopRingtone(); isAgentSpeaking = true; } });
                 retellWebClient.on("call_ended", () => { stopRingtone(); resetButtons(); alert("Call finished. Thank you!"); });
                 retellWebClient.on("error", (error) => { stopRingtone(); console.error("Retell Error:", error); alert("Connection Error."); resetButtons(); });
-                
                 await retellWebClient.startCall({ accessToken: accessToken });
-            } else {
-                alert("Submission failed. No Token.");
-                resetButtons();
-            }
-        } catch (error) {
-            console.error(error);
-            stopRingtone();
-            alert("Network Error.");
-            resetButtons();
-        }
+            } else { alert("Submission failed. No Token."); resetButtons(); }
+        } catch (error) { console.error(error); stopRingtone(); alert("Network Error."); resetButtons(); }
     }
 
     function resetButtons() {
