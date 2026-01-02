@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jason Chew's AI Classroom [v3]</title>
-    
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
     </script>
-    
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; padding-bottom: 60px; }
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
@@ -17,25 +15,20 @@
         .brand-section h1 { margin: 0; font-size: 24px; line-height: 1.2; }
         .profile-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #eee; }
         .lang-switcher { font-size: 18px; font-weight: bold; color: #555; cursor: pointer; }
-        .lang-option { padding: 0 5px; transition: color 0.3s; }
-        .lang-option:hover { color: #000; }
+        .lang-option { padding: 0 5px; transition: color 0.3s; cursor: pointer; }
         .lang-option.active { color: #d32f2f; text-decoration: underline; } 
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         .checkbox-container { display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
         .checkbox-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; }
-        .checkbox-item input[type="checkbox"] { width: auto; margin-top: 3px; }
         #other_input_container { margin-top: 5px; margin-left: 25px; display: none; }
         .class-button-group { display: flex; gap: 10px; margin-top: 25px; }
         button { flex: 1; padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; }
         #callConfirmBtn { background-color: #f44336; } 
-        #callConfirmBtn:hover { background-color: #d32f2f; }
-        #startChatBtn { background-color: #2196F3; } 
-        #startChatBtn:hover { background-color: #1976D2; }
-        #chatHelperText { display: none; margin-top: 15px; padding: 15px; background-color: #e3f2fd; border: 1px solid #2196F3; color: #0d47a1; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .legal-footer { margin-top: 40px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; color: #6c757d; line-height: 1.5; text-align: justify; }
-        retell-widget { z-index: 9999 !important; transform: scale(1.3); transform-origin: bottom right; right: 20px !important; bottom: 20px !important; }
+        #startChatBtn { background-color: #2196F3; }
+        #chatHelperText { display: none; margin-top: 15px; padding: 15px; background-color: #e3f2fd; border: 1px solid #2196F3; color: #0d47a1; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px; }
+        .legal-footer { margin-top: 40px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; color: #6c757d; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -46,7 +39,7 @@
                 <h1 id="mainTitle">Jason Chew's AI Classroom [v3]</h1>
                 <div style="font-size: 0.9em; color: #666;" id="subTitle">Training Course Inquiry Form</div>
             </div>
-            <img src="header-image.png" onerror="this.style.display='none'" alt="Jason Chew" class="profile-img"> 
+            <img src="header-image.png" onerror="this.style.display='none'" class="profile-img"> 
         </div>
         <div class="lang-switcher">
             <span class="lang-option active" onclick="setLanguage('english')" id="langEN">EN</span>
@@ -65,12 +58,12 @@
             <input type="email" id="email" required>
         </div>
         <div class="form-group">
-            <label for="mobile" id="lbl_mobile">Mobile Phone Number [example: +6012345678] *</label>
+            <label for="mobile" id="lbl_mobile">Mobile Number *</label>
             <input type="tel" id="mobile" required placeholder="+60123456789">
         </div>
         <div class="form-group">
             <label for="budget" id="lbl_budget">Budget *</label>
-            <select id="budget" name="budget" required>
+            <select id="budget" required>
                 <option value="" disabled selected id="opt_default">Select an option...</option>
                 <option value="Below RM 4,000" id="opt_1">Below RM 4,000</option>
                 <option value="RM 4,000 to RM 7,000" id="opt_2">RM 4,000 to RM 7,000</option>
@@ -78,11 +71,11 @@
             </select>
         </div>
         <div class="form-group">
-            <label id="lbl_courses">Please tick interested training course(s): *</label>
+            <label id="lbl_courses">Tick interested training course(s): *</label>
             <div class="checkbox-container">
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Gemini AI (Half Day)"><span id="lbl_c1">Gemini AI (Half Day course)</span></label>
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Google AI Suite (Full Day)"><span id="lbl_c2">Google AI Suite (Full Day course)</span></label>
-                <label class="checkbox-item"><input type="checkbox" name="course" value="Customer Service AI (Half Day)"><span id="lbl_c3">Customer Service AI (Half Day course)</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="course" value="Gemini AI (Half Day)"><span id="lbl_c1">Gemini AI (Half Day)</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="course" value="Google AI Suite (Full Day)"><span id="lbl_c2">Google AI Suite (Full Day)</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="course" value="Customer Service AI (Half Day)"><span id="lbl_c3">Customer Service AI (Half Day)</span></label>
                 <label class="checkbox-item"><input type="checkbox" id="chk_other" name="course" value="Other" onchange="toggleOtherInput()"><span id="lbl_other">Other</span></label>
                 <div id="other_input_container"><input type="text" id="other_text" placeholder="Please specify..."></div>
             </div>
@@ -91,39 +84,27 @@
             <button type="button" id="callConfirmBtn">Speak To AI Agent (Call)</button>
             <button type="button" id="startChatBtn">Chat with AI Agent</button>
         </div>
-        <div id="chatHelperText">✅ Chat Initialized! Click the icon in the bottom right corner ↘️</div>
+        <div id="chatHelperText">✅ Chat Initialized! Click the icon ↘️</div>
     </div>
 
     <div class="legal-footer">
-        <h4>JasonChew.HDRCtrainer@gmail.com</h4>
-        <p><strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> <span id="lbl_disclaimer_text">This tool is for educational convenience.</span></p>
-        <p><strong id="lbl_privacy_title">Privacy Notice:</strong> <span id="lbl_privacy_text">Sessions may be recorded for quality assurance.</span></p>
+        <p><strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> <span id="lbl_disclaimer_text">This tool is for educational use.</span></p>
     </div>
-
-    <audio id="ringtonePlayer" loop><source src="ring.mp3" type="audio/mpeg"></audio>
 
 <script>
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
-    const IDLE_TIMEOUT_MS = 180000; 
 
     let currentLang = 'english'; 
     let isChatLoaded = false;
-    let idleTimer = null;
-    
+
     const VOICE_AGENT_MAPPING = { 'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 'malay': 'agent_5b1878d8340797676edfb17e08', 'chinese': 'agent_798042308572cdcdae32b94241' };
     const CHAT_AGENT_MAPPING = { 'english': 'agent_53bfb2a24ce775fc88923be52e', 'malay': 'agent_9b25198e5b056b5412458dbbc6', 'chinese': 'agent_57560d7227f800a4a8b449222b' };
 
     const translations = {
-        english: {
-            mainTitle: "Jason Chew's AI Classroom [v3]", lbl_name: "Name *", lbl_email: "Email *", lbl_mobile: "Mobile Phone Number *", lbl_budget: "Budget *", lbl_courses: "Please tick interested training course(s): *", lbl_c1: "Gemini AI (Half Day course)", lbl_c2: "Google AI Suite (Full Day course)", lbl_c3: "Customer Service AI (Half Day course)", lbl_other: "Other", callConfirmBtn: "Speak To AI Agent (Call)", startChatBtn: "Chat with AI Agent", opt_default: "Select option...", opt_1: "Below RM 4,000", opt_2: "RM 4,000 to RM 7,000", opt_3: "RM 7,000 to RM 11,000", chatNotification: "✅ Chat Initialized! Click icon ↘️", widgetTitle: "Jason Chew AI Classroom Assistant", lbl_disclaimer_title: "Legal Disclaimer:", lbl_disclaimer_text: "For educational use.", lbl_privacy_title: "Privacy Notice:", lbl_privacy_text: "Recorded for quality purposes.", validation_error: "Please fill all required fields and select a course."
-        },
-        malay: {
-            mainTitle: "Kelas AI Jason Chew [v3]", lbl_name: "Nama *", lbl_email: "E-mel *", lbl_mobile: "No. Telefon Bimbit *", lbl_budget: "Bajet *", lbl_courses: "Sila tanda kursus latihan: *", lbl_c1: "Gemini AI (Separuh Hari)", lbl_c2: "Google AI Suite (Penuh Hari)", lbl_c3: "Servis Pelanggan AI (Separuh Hari)", lbl_other: "Lain-lain", callConfirmBtn: "Cakap dengan AI Agent (Call)", startChatBtn: "Sembang dengan AI Agent", opt_default: "Sila pilih...", opt_1: "Bawah RM 4,000", opt_2: "RM 4,000 - RM 7,000", opt_3: "RM 7,000 - RM 11,000", chatNotification: "✅ Sembang Bermula! Klik ikon ↘️", widgetTitle: "Pembantu AI Kelas Jason Chew", lbl_disclaimer_title: "Penafian:", lbl_disclaimer_text: "Tujuan pendidikan.", lbl_privacy_title: "Notis Privasi:", lbl_privacy_text: "Sesi direkodkan.", validation_error: "Sila isi semua ruangan dan pilih kursus."
-        },
-        chinese: {
-            mainTitle: "Jason Chew的AI智慧教室 [v3]", lbl_name: "姓名 *", lbl_email: "电子邮箱 *", lbl_mobile: "手机号码 *", lbl_budget: "预算 *", lbl_courses: "请勾选感兴趣的培训课程：*", lbl_c1: "利用 Gemini AI (半天课程)", lbl_c2: "掌握 Google AI Suite (全天课程)", lbl_c3: "AI 卓越客户服务 (半天课程)", lbl_other: "其他", callConfirmBtn: "与 AI Agent 通话 (拨打)", startChatBtn: "与 AI Agent 聊天", opt_default: "请选择...", opt_1: "RM 4,000 以下", opt_2: "RM 4,000 至 RM 7,000", opt_3: "RM 7,000 至 RM 11,000", chatNotification: "✅ 聊天已启动！点击图标 ↘️", widgetTitle: "Jason Chew AI 助手", lbl_disclaimer_title: "法律免责声明:", lbl_disclaimer_text: "仅供教育使用。", lbl_privacy_title: "隐私声明:", lbl_privacy_text: "将被录音。", validation_error: "带有 * 的选项均为必填项。"
-        }
+        english: { mainTitle: "Jason Chew's AI Classroom [v3]", lbl_name: "Name *", lbl_email: "Email *", lbl_mobile: "Mobile Number *", lbl_budget: "Budget *", lbl_courses: "Tick interested course(s): *", lbl_c1: "Gemini AI (Half Day)", lbl_c2: "Google AI Suite (Full Day)", lbl_c3: "Customer Service AI (Half Day)", lbl_other: "Other", callConfirmBtn: "Speak To AI (Call)", startChatBtn: "Chat with AI", opt_default: "Select option...", opt_1: "Below RM 4,000", opt_2: "RM 4,000 to RM 7,000", opt_3: "RM 7,000 to RM 11,000", chatNotification: "✅ Chat Initialized! Click the icon ↘️", validation_error: "Fill all * fields." },
+        malay: { mainTitle: "Kelas AI Jason Chew [v3]", lbl_name: "Nama *", lbl_email: "E-mel *", lbl_mobile: "No. Telefon *", lbl_budget: "Bajet *", lbl_courses: "Sila tanda kursus: *", lbl_c1: "Gemini AI (Separuh Hari)", lbl_c2: "Google AI Suite (Penuh Hari)", lbl_c3: "Khidmat Pelanggan AI (Separuh Hari)", lbl_other: "Lain-lain", callConfirmBtn: "Cakap dengan AI", startChatBtn: "Sembang dengan AI", opt_default: "Sila pilih...", opt_1: "Bawah RM 4,000", opt_2: "RM 4,000 - RM 7,000", opt_3: "RM 7,000 - RM 11,000", chatNotification: "✅ Sembang Bermula! Klik ikon ↘️", validation_error: "Sila isi ruangan *." },
+        chinese: { mainTitle: "Jason Chew的AI智慧教室 [v3]", lbl_name: "姓名 *", lbl_email: "电子邮箱 *", lbl_mobile: "手机号码 *", lbl_budget: "预算 *", lbl_courses: "请勾选感兴趣的培训课程：*", lbl_c1: "Gemini AI (半天课程)", lbl_c2: "Google AI Suite (全天课程)", lbl_c3: "AI 卓越客户服务 (半天课程)", lbl_other: "其他", callConfirmBtn: "与 AI 通话", startChatBtn: "与 AI 聊天", opt_default: "请选择...", opt_1: "RM 4,000 以下", opt_2: "RM 4,000 至 RM 7,000", opt_3: "RM 7,000 至 RM 11,000", chatNotification: "✅ 聊天已启动！点击图标 ↘️", validation_error: "带有 * 的选项均为必填项。" }
     };
 
     function setLanguage(lang) {
@@ -168,60 +149,48 @@
 
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
+        // FIXED ID: document.getElementById('budget').value [matches the HTML ID]
         const formData = {
             "user_name": document.getElementById('name').value.trim(),
-            "user_budget": document.getElementById('budget').value, // FIXED ID
+            "user_budget": document.getElementById('budget').value,
             "user_course": getSelectedCoursesString(),
             "customer_email": document.getElementById('email').value.trim(),
             "customer_phone": document.getElementById('mobile').value.trim()
         };
         const jsonVars = JSON.stringify(formData);
-        console.log("🚀 INJECTING VARIABLES:", formData);
+        console.log("🚀 INJECTING DATA:", formData);
 
-        const oldW = document.querySelector('retell-widget') || document.getElementById('retell-widget');
-        if (oldW) oldW.remove();
+        const oldWidget = document.querySelector('retell-widget') || document.getElementById('retell-widget');
+        if (oldWidget) oldWidget.remove();
 
         const script = document.createElement('script');
-        script.id = 'retell-widget'; script.src = `https://dashboard.retellai.com/retell-widget.js?v=${Date.now()}`;
-        script.type = 'module'; script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
+        script.id = 'retell-widget';
+        script.src = `https://dashboard.retellai.com/retell-widget.js?v=${Date.now()}`;
+        script.type = 'module';
+        script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
         script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-title', translations[currentLang].widgetTitle);
         script.setAttribute('data-dynamic-variables', jsonVars);
         document.body.appendChild(script);
 
         setTimeout(() => {
             document.getElementById('startChatBtn').style.display = 'none';
             document.getElementById('chatHelperText').style.display = 'block';
-            isChatLoaded = true; startIdleWatcher();
+            isChatLoaded = true;
         }, 1500);
     }
 
-    function startIdleWatcher() {
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => { if (isChatLoaded) endChatSession(true); }, IDLE_TIMEOUT_MS);
-    }
-    function endChatSession(showAlert) {
-        const w = document.querySelector('retell-widget'); if (w) w.remove(); isChatLoaded = false;
-        document.getElementById('startChatBtn').style.display = 'inline-block'; document.getElementById('startChatBtn').disabled = false;
-        document.getElementById('chatHelperText').style.display = 'none';
-        if (showAlert) alert("Chat session ended.");
-    }
-    ['mousemove', 'keydown', 'click'].forEach(evt => document.addEventListener(evt, () => { if(isChatLoaded) startIdleWatcher(); }));
-
     window.toggleOtherInput = function() { document.getElementById('other_input_container').style.display = document.getElementById('chk_other').checked ? 'block' : 'none'; };
-    document.getElementById('startChatBtn').addEventListener('click', () => { if (validateForm()) { document.getElementById('startChatBtn').innerText = "Starting..."; document.getElementById('startChatBtn').disabled = true; loadChatWidget(); } });
-    document.getElementById('callConfirmBtn').addEventListener('click', () => { if (validateForm()) sendFormData(getFormData('Call To Confirm')); });
+    document.getElementById('startChatBtn').addEventListener('click', () => { if (validateForm()) loadChatWidget(); });
+    document.getElementById('callConfirmBtn').addEventListener('click', () => { if (validateForm()) sendFormData(); });
 
-    function getFormData(action) { return { timestamp: new Date().toISOString(), name: document.getElementById('name').value, email: document.getElementById('email').value, mobile: document.getElementById('mobile').value, budget: document.getElementById('budget').value, requirements: getSelectedCoursesString(), formAction: action, chosen_agent_id: VOICE_AGENT_MAPPING[currentLang], language_preference: currentLang }; }
-
-    async function sendFormData(data) {
-        const cBtn = document.getElementById('callConfirmBtn'); cBtn.disabled = true; cBtn.innerText = "Connecting...";
+    async function sendFormData() {
+        const data = { name: document.getElementById('name').value, email: document.getElementById('email').value, mobile: document.getElementById('mobile').value, budget: document.getElementById('budget').value, requirements: getSelectedCoursesString(), chosen_agent_id: VOICE_AGENT_MAPPING[currentLang] };
         try {
             const response = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            const responseData = await response.json();
-            const accessToken = Array.isArray(responseData) ? responseData[0].access_token : responseData.access_token; 
-            if (accessToken) { const r = new window.RetellWebClient(); await r.startCall({ accessToken: accessToken }); }
-        } catch (e) { cBtn.disabled = false; alert("Error."); }
+            const res = await response.json();
+            const token = Array.isArray(res) ? res[0].access_token : res.access_token;
+            if (token) { const client = new window.RetellWebClient(); await client.startCall({ accessToken: token }); }
+        } catch (e) { alert("Error."); }
     }
 </script>
 </body>
