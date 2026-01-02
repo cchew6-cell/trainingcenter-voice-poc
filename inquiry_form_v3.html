@@ -349,12 +349,26 @@
         script.setAttribute('data-title', widgetTitle);
         
         // --- SAFE INJECTION (FIXED ATTRIBUTE) ---
+        // const jsonVars = JSON.stringify(formData);
+        // script.setAttribute('data-dynamic-variables', jsonVars); 
+        // script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
+        
+//         document.body.appendChild(script);
+
+// --- UNIVERSAL INJECTION (Set ALL known attributes) ---
         const jsonVars = JSON.stringify(formData);
-        script.setAttribute('data-dynamic-variables', jsonVars); 
+        
+        // 1. The Modern Attribute
+        script.setAttribute('data-dynamic-variables', jsonVars);
+        
+        // 2. The Legacy Attribute (The one that worked for you before)
         script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
         
-        document.body.appendChild(script);
+        // 3. The Experimental Attribute
+        script.setAttribute('data-metadata', jsonVars);
 
+
+        
         // 4. UI Update
         setTimeout(() => {
             document.getElementById('startChatBtn').style.display = 'none';
