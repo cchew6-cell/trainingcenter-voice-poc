@@ -325,13 +325,11 @@
         const courses = getSelectedCoursesString();
         const t = translations[currentLang];
 
-        // Ensure text/select fields are filled
         if (!name || !email || !mobile || !budget || !courses) { 
             alert(t.validation_error); 
             return false; 
         }
 
-        // Email format check
         if (!email.includes('@')) {
             alert("Please enter a valid email address.");
             return false;
@@ -340,17 +338,17 @@
         return true;
     }
 
-   // Within your loadChatWidget() function, ensure the mapping is clean
-function loadChatWidget() {
-    const agentId = CHAT_AGENT_MAPPING[currentLang];
-    
-    const formData = {
-        "user_name": document.getElementById('name').value.trim(),
-        "user_budget": document.getElementById('user_budget').value, // Ensure ID matches your HTML
-        "user_course": getSelectedCoursesString(),
-        "customer_email": document.getElementById('email').value.trim(),
-        "customer_phone": document.getElementById('mobile').value.trim()
-    };
+    function loadChatWidget() {
+        const agentId = CHAT_AGENT_MAPPING[currentLang];
+        const widgetTitle = translations[currentLang].widgetTitle;
+        
+        const formData = {
+            "user_name": document.getElementById('name').value.trim(),
+            "user_budget": document.getElementById('budget').value,
+            "user_course": getSelectedCoursesString(),
+            "customer_email": document.getElementById('email').value.trim(),
+            "customer_phone": document.getElementById('mobile').value.trim()
+        };
         
         const jsonVars = JSON.stringify(formData);
         console.log("🚀 INJECTING VARIABLES FOR CHAT:", formData);
