@@ -121,7 +121,7 @@
     </audio>
 
 <script>
-    // --------------------------------------------------------------------------------
+         // --------------------------------------------------------------------------------
     // 1. CONFIGURATION
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
@@ -235,6 +235,7 @@
     function setLanguage(lang) {
         currentLang = lang;
         const t = translations[lang];
+        // ... (UI Update code remains same) ...
         document.getElementById('mainTitle').innerText = t.mainTitle;
         document.getElementById('subTitle').innerText = t.subTitle;
         document.getElementById('lbl_name').innerText = t.lbl_name;
@@ -282,13 +283,17 @@
         return selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Inquiry";
     }
 
-    // --- NUCLEAR CHAT LOADER (V3 - Force Unique Session) ---
+    // --- NEW: DIRECT COMPONENT INJECTION METHOD ---
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // 1. Wipe Previous Elements
+        // 1. Clean Up
         endChatSession(false);
+        // Clear Storage
+        localStorage.removeItem('retell-widget-session');
+        localStorage.clear();
+        sessionStorage.clear();
 
         // 2. Prepare Data
         const formData = {
@@ -298,32 +303,39 @@
             "budget_requirement": document.getElementById('budget').value || "Not Specified",
             "course_requirement": getSelectedCoursesString()
         };
-        
         console.log("🚀 INJECTING VARIABLES:", formData);
 
-        // 3. Inject Script
-        const script = document.createElement('script');
-        script.id = 'retell-widget';
-        script.src = 'https://dashboard.retellai.com/retell-widget.js';
-        script.type = 'module';
+        // 3. Create the <retell-widget> Element Manually
+        // This forces the attributes onto the component directly, bypassing the script tag parser
+        const widget = document.createElement('retell-widget');
+        widget.id = 'retell-widget';
+        widget.setAttribute('public-key', RETELL_PUBLIC_KEY);
+        widget.setAttribute('agent-id', agentId);
+        widget.setAttribute('title', widgetTitle);
         
-        script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
-        script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-title', widgetTitle);
-        
-        // --- KEY FIX: Use standard attribute AND data-customer-id to force refresh ---
+        // Inject Variables (Standard & Fallback)
         const jsonVars = JSON.stringify(formData);
+        widget.setAttribute('dynamic-variables', jsonVars); 
+        widget.setAttribute('data-dynamic-variables', jsonVars); // Redundancy
         
-        // This is the attribute Retell officially documents for web client context
-        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
-        
-        // Generating a unique ID forces Retell to treat this as a NEW session
+        // Inject Customer ID for new session
         const uniqueSessionID = "user_" + Date.now();
-        script.setAttribute('data-customer-id', uniqueSessionID);
-        
-        document.body.appendChild(script);
+        widget.setAttribute('customer-id', uniqueSessionID);
+        widget.setAttribute('data-customer-id', uniqueSessionID); // Redundancy
 
-        // 4. Update UI
+        document.body.appendChild(widget);
+
+        // 4. Load the Script Definition
+        // We check if script already exists to avoid double loading
+        if (!document.getElementById('retell-sdk-script')) {
+            const script = document.createElement('script');
+            script.id = 'retell-sdk-script';
+            script.src = 'https://dashboard.retellai.com/retell-widget.js';
+            script.type = 'module';
+            document.body.appendChild(script);
+        }
+
+        // 5. UI Update
         setTimeout(() => {
             document.getElementById('startChatBtn').style.display = 'none';
             document.getElementById('chatHelperText').style.display = 'block';
@@ -343,10 +355,11 @@
         if (isChatLoaded) startIdleWatcher();
     }
     function endChatSession(showAlert) {
-        const oldScript = document.getElementById('retell-widget');
-        if (oldScript) oldScript.remove();
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
+        
+        // We do NOT remove the SDK script, only the widget element
+        
         isChatLoaded = false;
         if (idleTimer) clearTimeout(idleTimer);
         const chatBtn = document.getElementById('startChatBtn');
