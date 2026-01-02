@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jason Chew's AI Classroom [v3]</title>
     
-    <!-- Retell Call SDK (For Voice Button Only) -->
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
@@ -70,7 +69,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <div class="header-container">
         <div class="brand-section">
             <div class="titles">
@@ -86,7 +84,6 @@
         </div>
     </div>
 
-    <!-- FORM -->
     <div id="inquiryForm">
         <div class="form-group">
             <label for="name" id="lbl_name">Name *</label>
@@ -129,7 +126,6 @@
         </div>
     </div>
 
-    <!-- DISCLAIMER -->
     <div class="legal-footer">
         <h4>JasonChew.HDRCtrainer@gmail.com</h4>
         <p>
@@ -145,7 +141,6 @@
         </p>
     </div>
 
-    <!-- AUDIO PLAYER -->
     <audio id="ringtonePlayer" loop>
         <source src="ring.mp3" type="audio/mpeg">
         <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
@@ -168,14 +163,14 @@
     const VOICE_AGENT_MAPPING = {
         'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
         'malay':   'agent_5b1878d8340797676edfb17e08',    
-        'chinese': 'agent_798042308572cdcdae32b94241'   
+        'chinese': 'agent_798042308572cdcdae32b94241'    
     };
 
     // Chat Agent IDs
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_f04e08a6c3a28c017b5ece2b0a'   
+        'chinese': 'agent_57560d7227f800a4a8b449222b'    
     };
 
     // --- TRANSLATIONS ---
@@ -200,7 +195,7 @@
             opt_2: "RM 4,000 to RM 7,000",
             opt_3: "RM 7,000 to RM 11,000",
             chatNotification: "✅ Chat Initialized! Please click the icon in the bottom right corner ↘️",
-            widgetTitle: "Jason Chew AI Assistant",
+            widgetTitle: "Jason Chew AI's Classroom AI Assistant",
             lbl_disclaimer_title: "Legal Disclaimer:",
             lbl_disclaimer_text: "This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.",
             lbl_owner_disclaimer: "Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.",
@@ -319,15 +314,12 @@
         return selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Inquiry";
     }
 
-    // --- SAFE CHAT WIDGET LOADER (Script Injection Method) ---
+    // --- SAFE CHAT WIDGET LOADER (Corrected) ---
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // 1. Remove existing widget and script (Clean State)
-        endChatSession(false);
-
-        // 2. Prepare Data
+        // 1. Prepare Data
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -335,31 +327,35 @@
             "budget_requirement": document.getElementById('budget').value || "Not Specified",
             "course_requirement": getSelectedCoursesString()
         };
+        const jsonVars = JSON.stringify(formData);
         console.log("🚀 INJECTING VARIABLES:", formData);
 
-        // 3. Create the SCRIPT tag with attributes (The Standard Retell Method)
-        // This ensures attributes are present exactly when the script runs
-        const script = document.createElement('script');
-        script.id = 'retell-widget';
-        script.src = 'https://dashboard.retellai.com/retell-widget.js';
-        script.type = 'module';
-        script.async = true;
+        // 2. Load the Script ONLY IF it's not already there
+        if (!document.getElementById('retell-widget')) {
+            const script = document.createElement('script');
+            script.id = 'retell-widget';
+            script.src = 'https://dashboard.retellai.com/retell-widget.js';
+            script.type = 'module';
+            script.async = true;
+            document.body.appendChild(script);
+        }
 
-        // Set ALL Attributes
-        script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
-        script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-title', widgetTitle);
-        
-        // Dynamic Variables
-        const jsonVars = JSON.stringify(formData);
-        script.setAttribute('data-dynamic-variables', jsonVars); 
-        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars); // Fallback
-        
-        // Force new session (Unique Customer ID)
-        script.setAttribute('data-customer-id', "user_" + Date.now());
+        // 3. Manually Create/Update the Widget Element
+        // Remove old widget instance if exists
+        const oldWidget = document.querySelector('retell-widget');
+        if (oldWidget) oldWidget.remove();
 
-        // Append script to body
-        document.body.appendChild(script);
+        // Create new widget instance with fresh variables
+        const widget = document.createElement('retell-widget');
+        widget.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
+        widget.setAttribute('data-agent-id', agentId);
+        widget.setAttribute('data-title', widgetTitle);
+        widget.setAttribute('data-customer-id', "user_" + Date.now());
+        widget.setAttribute('data-dynamic-variables', jsonVars);
+        widget.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
+
+        // Append the widget to the body
+        document.body.appendChild(widget);
 
         // 4. Update UI
         setTimeout(() => {
@@ -367,7 +363,7 @@
             document.getElementById('chatHelperText').style.display = 'block';
             isChatLoaded = true;
             resetIdleTimer();
-        }, 1000);
+        }, 500);
     }
 
     // --- IDLE TIMER ---
@@ -381,10 +377,7 @@
         if (isChatLoaded) startIdleWatcher();
     }
     function endChatSession(showAlert) {
-        // Clean up both script AND component
-        const oldScript = document.getElementById('retell-widget');
-        if (oldScript) oldScript.remove();
-        
+        // Corrected: Remove ONLY the widget element, keep the script tag
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
         
