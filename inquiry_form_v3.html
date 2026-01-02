@@ -157,32 +157,26 @@
         return true;
     }
 
-    function loadChatWidget() {
-        const agentId = CHAT_AGENT_MAPPING[currentLang];
-        // CRITICAL FIX: Pull from ID 'budget'
-        const formData = {
-            "user_name": document.getElementById('name').value.trim(),
-            "user_budget": document.getElementById('budget').value,
-            "user_course": getSelectedCoursesString(),
-            "customer_email": document.getElementById('email').value.trim(),
-            "customer_phone": document.getElementById('mobile').value.trim()
-        };
-        const jsonVars = JSON.stringify(formData);
-        console.log("🚀 INJECTING VARIABLES FOR CHAT:", formData);
+   // Within your loadChatWidget() function, ensure this exact mapping:
+function loadChatWidget() {
+    const agentId = CHAT_AGENT_MAPPING[currentLang];
+    
+    // FIX: Match 'user_budget' key to HTML ID 'budget'
+    const formData = {
+        "user_name": document.getElementById('name').value.trim(),
+        "user_budget": document.getElementById('budget').value, 
+        "user_course": getSelectedCoursesString(),
+        "customer_email": document.getElementById('email').value.trim(),
+        "customer_phone": document.getElementById('mobile').value.trim()
+    };
+    
+    const jsonVars = JSON.stringify(formData);
+    console.log("🚀 INJECTING VARIABLES FOR CHAT:", formData);
 
-        const oldW = document.querySelector('retell-widget') || document.getElementById('retell-widget');
-        if (oldW) oldW.remove();
-
-        const script = document.createElement('script');
-        script.id = 'retell-widget'; script.src = `https://dashboard.retellai.com/retell-widget.js?v=${Date.now()}`;
-        script.type = 'module'; script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
-        script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-dynamic-variables', jsonVars);
-        document.body.appendChild(script);
-
-        setTimeout(() => { document.getElementById('startChatBtn').style.display = 'none'; document.getElementById('chatHelperText').style.display = 'block'; isChatLoaded = true; startIdleWatcher(); }, 1500);
-    }
-
+    // ... rest of your script to load the widget ...
+    const script = document.createElement('script');
+    script.setAttribute('data-dynamic-variables', jsonVars);
+}
     function startIdleWatcher() {
         if (idleTimer) clearTimeout(idleTimer);
         idleTimer = setTimeout(() => { if (isChatLoaded) endChatSession(true); }, IDLE_TIMEOUT_MS);
