@@ -146,6 +146,8 @@
         <source src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
     </audio>
 
+    <script id="retell-widget" src="https://dashboard.retellai.com/retell-widget.js" async></script>
+
 <script>
     // --------------------------------------------------------------------------------
     // 1. CONFIGURATION
@@ -314,7 +316,7 @@
         return selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Inquiry";
     }
 
-    // --- SAFE CHAT WIDGET LOADER (Revised Strategy) ---
+    // --- SAFE CHAT WIDGET LOADER (Revised Strategy: Element Injection) ---
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
@@ -330,40 +332,35 @@
         const jsonVars = JSON.stringify(formData);
         console.log("🚀 INJECTING VARIABLES:", formData);
 
-        // 2. CLEANUP: Remove ANY existing scripts or widgets to prevent conflicts
-        const oldScript = document.getElementById('retell-widget');
-        if (oldScript) oldScript.remove();
-        
+        // 2. Remove ANY existing widget (Clean State)
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
 
-        // 3. CREATE SCRIPT WITH ATTRIBUTES
-        // We set attributes ON the script tag because the library reads them from there.
-        // We use a timestamp query param (Date.now()) to FORCE the browser to execute it again.
-        const script = document.createElement('script');
-        script.id = 'retell-widget'; // CRITICAL: This ID must exist
-        script.src = `https://dashboard.retellai.com/retell-widget.js?t=${Date.now()}`;
-        script.type = 'module';
-        script.async = true;
+        // 3. CREATE WIDGET ELEMENT
+        // IMPORTANT: We set 'data-public-key' AND 'data-agent-id' directly on the element.
+        // This fixes the "data-public-key attribute is required" error.
+        const widget = document.createElement('retell-widget');
+        
+        // Critical Attributes
+        widget.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
+        widget.setAttribute('data-agent-id', agentId);
+        
+        // Configuration
+        widget.setAttribute('data-customer-id', "user_" + Date.now());
+        widget.setAttribute('data-title', widgetTitle);
+        widget.setAttribute('data-dynamic-variables', jsonVars);
+        widget.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
 
-        // Set attributes DIRECTLY on the script tag (Standard Retell Implementation)
-        script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
-        script.setAttribute('data-agent-id', agentId);
-        script.setAttribute('data-customer-id', "user_" + Date.now());
-        script.setAttribute('data-title', widgetTitle);
-        script.setAttribute('data-dynamic-variables', jsonVars);
-        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
+        // 4. INJECT THE WIDGET
+        document.body.appendChild(widget);
 
-        // 4. INJECT
-        document.body.appendChild(script);
-
-        // 5. Update UI (Script will auto-create the widget)
+        // 5. Update UI
         setTimeout(() => {
             document.getElementById('startChatBtn').style.display = 'none';
             document.getElementById('chatHelperText').style.display = 'block';
             isChatLoaded = true;
             resetIdleTimer();
-        }, 1000);
+        }, 800);
     }
 
     // --- IDLE TIMER ---
@@ -377,10 +374,7 @@
         if (isChatLoaded) startIdleWatcher();
     }
     function endChatSession(showAlert) {
-        // Remove both script and widget to ensure clean state for next load
-        const oldScript = document.getElementById('retell-widget');
-        if (oldScript) oldScript.remove();
-        
+        // Remove only the widget element
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
         
