@@ -97,7 +97,7 @@
             <input type="email" id="email" required>
         </div>
         <div class="form-group">
-            <label for="mobile" id="lbl_mobile">Mobile Phone Number *</label>
+            <label for="mobile" id="lbl_mobile">Mobile Phone Number  [example: +6012345678]*</label>
             <input type="tel" id="mobile" required placeholder="+60123456789">
         </div>
         <div class="form-group">
@@ -157,25 +157,25 @@
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR PUBLIC KEY
-    const IDLE_TIMEOUT_MS = 60000; 
+    const IDLE_TIMEOUT_MS = 60000; // 1 Minute
 
     // Global State
     let currentLang = 'english'; 
     let isChatLoaded = false;
     let idleTimer = null;
     
-    // Voice Agent IDs
+    // Voice Agent IDs (Red Button)
     const VOICE_AGENT_MAPPING = {
         'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
         'malay':   'agent_5b1878d8340797676edfb17e08',    
         'chinese': 'agent_798042308572cdcdae32b94241'   
     };
 
-    // Chat Agent IDs
+    // Chat Agent IDs (Blue Button)
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_57560d7227f800a4a8b449222b'   
+        'chinese': 'agent_57560d7227f800a4a8b449222b'
     };
 
     // --- TRANSLATIONS ---
@@ -185,7 +185,7 @@
             subTitle: "Training Course Inquiry Form",
             lbl_name: "Name *",
             lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number  [example: +6012345678] *",
+            lbl_mobile: "Mobile Phone Number  [example: +6012345678]*",
             lbl_budget: "Budget *",
             lbl_courses: "Please tick the training course(s) that you are interested in: *",
             lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
@@ -200,7 +200,7 @@
             opt_2: "RM 4,000 to RM 7,000",
             opt_3: "RM 7,000 to RM 11,000",
             chatNotification: "✅ Chat Initialized! Please click the icon in the bottom right corner ↘️",
-            widgetTitle: "Jason Chew AI Assistant",
+            widgetTitle: "Jason Chew AI's Classroom AI Assistant",
             lbl_disclaimer_title: "Legal Disclaimer:",
             lbl_disclaimer_text: "This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.",
             lbl_owner_disclaimer: "Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.",
@@ -304,10 +304,7 @@
         if(lang === 'malay') document.getElementById('langMY').classList.add('active');
         if(lang === 'chinese') document.getElementById('langCN').classList.add('active');
 
-        // Only reload widget if it was ALREADY loaded
-        if (isChatLoaded) {
-            loadChatWidget(); 
-        }
+        if (isChatLoaded) loadChatWidget(); 
     }
 
     // --- HELPER: GET SELECTED COURSES ---
@@ -330,7 +327,7 @@
         // 1. Remove existing
         endChatSession(false);
 
-        // 2. Prepare Data for Injection
+        // 2. Prepare Data (Context Injection)
         const formData = {
             "customer_name": document.getElementById('name').value || "Guest",
             "customer_email": document.getElementById('email').value || "Not Provided",
@@ -349,8 +346,11 @@
         script.setAttribute('data-agent-id', agentId);
         script.setAttribute('data-title', widgetTitle);
         
-        // --- SAFE INJECTION (Correct Attribute) ---
-        script.setAttribute('data-retell-llm-dynamic-variables', JSON.stringify(formData));
+        // --- SAFE INJECTION FIX ---
+        // Setting both attributes to ensure compatibility with Retell Widget
+        const jsonVars = JSON.stringify(formData);
+        script.setAttribute('data-dynamic-variables', jsonVars); 
+        script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
         
         document.body.appendChild(script);
 
