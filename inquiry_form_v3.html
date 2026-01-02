@@ -166,11 +166,11 @@
         'chinese': 'agent_798042308572cdcdae32b94241'    
     };
 
-    // Chat Agent IDs
+    // Chat Agent IDs (Updated for Malay & Chinese)
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_f04e08a6c3a28c017b5ece2b0a'    
+        'chinese': 'agent_57560d7227f800a4a8b449222b'    
     };
 
     // --- TRANSLATIONS ---
@@ -200,7 +200,8 @@
             lbl_disclaimer_text: "This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.",
             lbl_owner_disclaimer: "Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.",
             lbl_privacy_title: "Privacy Notice:",
-            lbl_privacy_text: "Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing."
+            lbl_privacy_text: "Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing.",
+            validation_error: "Please fill out all required fields marked with * and select at least one course."
         },
         malay: {
             mainTitle: "Kelas AI Jason Chew [v3]",
@@ -227,7 +228,8 @@
             lbl_disclaimer_text: "Alat ini disediakan untuk kemudahan pendidikan dan pentadbiran. Pengguna bertanggungjawab sepenuhnya untuk memastikan penggunaan alat ini tidak melanggar hak cipta, hak harta intelek, atau Syarat Perkhidmatan mana-mana sistem sasaran.",
             lbl_owner_disclaimer: "Kelas AI Jason Chew (Pemilik Aplikasi) tidak bertanggungjawab atas sebarang pelanggaran hak cipta, penggunaan data tanpa kebenaran, atau akibat undang-undang yang timbul daripada tindakan pengguna.",
             lbl_privacy_title: "Notis Privasi:",
-            lbl_privacy_text: "Sila ambil maklum bahawa semua panggilan suara dan sesi sembang mungkin direkodkan untuk tujuan latihan dan jaminan kualiti. Dengan menggunakan ciri-ciri ini, anda bersetuju dengan rakaman dan pemprosesan data tersebut."
+            lbl_privacy_text: "Sila ambil maklum bahawa semua panggilan suara dan sesi sembang mungkin direkodkan untuk tujuan latihan dan jaminan kualiti. Dengan menggunakan ciri-ciri ini, anda bersetuju dengan rakaman dan pemprosesan data tersebut.",
+            validation_error: "Sila isi semua ruangan yang bertanda * dan pilih sekurang-kurangnya satu kursus."
         },
         chinese: {
             mainTitle: "Jason Chew的AI智慧教室 [v3]",
@@ -254,7 +256,8 @@
             lbl_disclaimer_text: "本工具仅供教育和行政便利使用。用户自行负责确保使用本工具不会侵犯任何目标系统的版权、知识产权或服务条款。",
             lbl_owner_disclaimer: "Jason Chew AI 智慧教室（应用所有者）不对任何版权侵权、未经授权的数据使用或因用户行为引起的法律后果承担责任。",
             lbl_privacy_title: "隐私声明：",
-            lbl_privacy_text: "请注意，所有的语音通话和聊天记录可能会被录制，用于培训和质量保证。使用这些功能即表示您同意此类录音和数据处理。"
+            lbl_privacy_text: "请注意，所有的语音通话和聊天记录可能会被录制，用于培训和质量保证。使用这些功能即表示您同意此类录音和数据处理。",
+            validation_error: "请填写所有标有 * 的必填项，并至少选择一门课程。"
         }
     };
 
@@ -281,7 +284,6 @@
         document.getElementById('lbl_c3').innerText = t.lbl_c3;
         document.getElementById('lbl_other').innerText = t.lbl_other;
 
-        // Footer & Notification Updates
         document.getElementById('chatHelperText').innerText = t.chatNotification;
         document.getElementById('lbl_disclaimer_title').innerText = t.lbl_disclaimer_title;
         document.getElementById('lbl_disclaimer_text').innerText = t.lbl_disclaimer_text;
@@ -311,27 +313,30 @@
                 selectedCourses.push(txt ? "Other: " + txt : "Other");
             } else selectedCourses.push(chk.value);
         });
-        return selectedCourses.length > 0 ? selectedCourses.join(", ") : "General Inquiry";
+        return selectedCourses.length > 0 ? selectedCourses.join(", ") : "";
     }
 
-    // --- STRICT VALIDATION ---
+    // --- STRICT VALIDATION FOR ALL * FIELDS ---
     function validateForm() {
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const mobile = document.getElementById('mobile').value.trim();
         const budget = document.getElementById('budget').value;
-        
-        let selectedCourses = false;
-        document.querySelectorAll('input[name="course"]:checked').forEach(() => selectedCourses = true);
+        const courses = getSelectedCoursesString();
+        const t = translations[currentLang];
 
-        if (!name || !email || !mobile || !budget) { 
-            alert("Please fill out all required fields, including your Mobile Phone Number."); 
+        // Ensure text/select fields are filled
+        if (!name || !email || !mobile || !budget || !courses) { 
+            alert(t.validation_error); 
             return false; 
         }
-        if (!selectedCourses) { 
-            alert("Please tick at least one course."); 
-            return false; 
+
+        // Email format check
+        if (!email.includes('@')) {
+            alert("Please enter a valid email address.");
+            return false;
         }
+
         return true;
     }
 
@@ -340,7 +345,6 @@
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // Collect current form values
         const formData = {
             "user_name": document.getElementById('name').value.trim(),
             "user_budget": document.getElementById('budget').value,
@@ -352,20 +356,17 @@
         const jsonVars = JSON.stringify(formData);
         console.log("🚀 INJECTING VARIABLES FOR CHAT:", formData);
 
-        // Cleanup previous instances
         const oldScript = document.getElementById('retell-widget');
         if (oldScript) oldScript.remove();
         const oldWidget = document.querySelector('retell-widget');
         if (oldWidget) oldWidget.remove();
 
-        // Inject script with forced reload
         const script = document.createElement('script');
         script.id = 'retell-widget';
         script.src = `https://dashboard.retellai.com/retell-widget.js?v=${Date.now()}`;
         script.type = 'module';
         script.async = true;
 
-        // Configuration attributes
         script.setAttribute('data-public-key', RETELL_PUBLIC_KEY);
         script.setAttribute('data-agent-id', agentId);
         script.setAttribute('data-title', widgetTitle);
@@ -379,7 +380,7 @@
             document.getElementById('chatHelperText').style.display = 'block';
             isChatLoaded = true;
             resetIdleTimer();
-        }, 1500); // 1.5s delay ensures variables are registered on Retell server
+        }, 1500);
     }
 
     // --- IDLE TIMER ---
