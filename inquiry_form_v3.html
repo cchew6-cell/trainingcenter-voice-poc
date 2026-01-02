@@ -89,8 +89,8 @@
     </div>
 
     <div class="legal-footer">
-        <p><strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> <span id="lbl_disclaimer_text">This tool is for educational convenience.</span></p>
-        <p><strong id="lbl_privacy_title">Privacy Notice:</strong> <span id="lbl_privacy_text">Sessions recorded for quality assurance.</span></p>
+        <p><strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> <span id="lbl_disclaimer_text">This tool is provided for educational convenience.</span></p>
+        <p><strong id="lbl_privacy_title">Privacy Notice:</strong> <span id="lbl_privacy_text">Calls and chat sessions may be recorded for quality assurance.</span></p>
     </div>
 
     <audio id="ringtonePlayer" loop><source src="ring.mp3" type="audio/mpeg"></audio>
@@ -108,9 +108,9 @@
     const CHAT_AGENT_MAPPING = { 'english': 'agent_53bfb2a24ce775fc88923be52e', 'malay': 'agent_9b25198e5b056b5412458dbbc6', 'chinese': 'agent_57560d7227f800a4a8b449222b' };
 
     const translations = {
-        english: { mainTitle: "Jason Chew's AI Classroom [v3]", subTitle: "Training Course Inquiry Form", lbl_name: "Name *", lbl_email: "Email *", lbl_mobile: "Mobile Number *", lbl_budget: "Budget *", lbl_courses: "Tick interested course(s): *", lbl_c1: "Gemini AI (Half Day)", lbl_c2: "Google AI Suite (Full Day)", lbl_c3: "Customer Service AI (Half Day)", lbl_other: "Other", callConfirmBtn: "Speak To AI (Call)", startChatBtn: "Chat with AI", opt_default: "Select option...", opt_1: "Below RM 4,000", opt_2: "RM 4,000 to RM 7,000", opt_3: "RM 7,000 to RM 11,000", chatNotification: "✅ Chat Initialized! Click icon ↘️", validation_error: "All * fields are mandatory." },
-        malay: { mainTitle: "Kelas AI Jason Chew [v3]", subTitle: "Borang Pertanyaan Kursus", lbl_name: "Nama *", lbl_email: "E-mel *", lbl_mobile: "No. Telefon *", lbl_budget: "Bajet *", lbl_courses: "Sila tanda kursus: *", lbl_c1: "Gemini AI (Separuh Hari)", lbl_c2: "Google AI Suite (Penuh Hari)", lbl_c3: "Khidmat Pelanggan AI (Separuh Hari)", lbl_other: "Lain-lain", callConfirmBtn: "Cakap dengan AI", startChatBtn: "Sembang dengan AI", opt_default: "Sila pilih...", opt_1: "Bawah RM 4,000", opt_2: "RM 4,000 - RM 7,000", opt_3: "RM 7,000 - RM 11,000", chatNotification: "✅ Sembang Bermula! Klik ikon ↘️", validation_error: "Semua ruangan bertanda * adalah wajib." },
-        chinese: { mainTitle: "Jason Chew的AI智慧教室 [v3]", subTitle: "培训课程咨询表", lbl_name: "姓名 *", lbl_email: "电子邮箱 *", lbl_mobile: "手机号码 *", lbl_budget: "预算 *", lbl_courses: "请勾选培训课程：*", lbl_c1: "Gemini AI (半天课程)", lbl_c2: "Google AI Suite (全天课程)", lbl_c3: "AI 卓越客户服务 (半天课程)", lbl_other: "其他", callConfirmBtn: "与 AI 通话", startChatBtn: "与 AI 聊天", opt_default: "请选择...", opt_1: "RM 4,000 以下", opt_2: "RM 4,000 至 RM 7,000", opt_3: "RM 7,000 至 RM 11,000", chatNotification: "✅ 聊天已启动！点击图标 ↘️", validation_error: "带有 * 的选项均为必填项。" }
+        english: { mainTitle: "Jason Chew's AI Classroom [v3]", subTitle: "Training Course Inquiry Form", lbl_name: "Name *", lbl_email: "Email *", lbl_mobile: "Mobile Number *", lbl_budget: "Budget *", lbl_courses: "Tick interested course(s): *", lbl_c1: "Gemini AI (Half Day)", lbl_c2: "Google AI Suite (Full Day)", lbl_c3: "Customer Service AI (Half Day)", lbl_other: "Other", callConfirmBtn: "Speak To AI (Call)", startChatBtn: "Chat with AI", opt_default: "Select option...", opt_1: "Below RM 4,000", opt_2: "RM 4,000 to RM 7,000", opt_3: "RM 7,000 to RM 11,000", chatNotification: "✅ Chat Initialized! Click icon ↘️", validation_error: "All fields marked * are mandatory." },
+        malay: { mainTitle: "Kelas AI Jason Chew [v3]", subTitle: "Borang Pertanyaan Kursus", lbl_name: "Nama *", lbl_email: "E-mel *", lbl_mobile: "No. Telefon Bimbit *", lbl_budget: "Bajet *", lbl_courses: "Sila tanda kursus: *", lbl_c1: "Gemini AI (Separuh Hari)", lbl_c2: "Google AI Suite (Penuh Hari)", lbl_c3: "Khidmat Pelanggan AI (Separuh Hari)", lbl_other: "Lain-lain", callConfirmBtn: "Cakap dengan AI", startChatBtn: "Sembang dengan AI", opt_default: "Sila pilih...", opt_1: "Bawah RM 4,000", opt_2: "RM 4,000 - RM 7,000", opt_3: "RM 7,000 - RM 11,000", chatNotification: "✅ Sembang Bermula! Klik ikon ↘️", validation_error: "Ruangan bertanda * adalah wajib." },
+        chinese: { mainTitle: "Jason Chew的AI智慧教室 [v3]", subTitle: "培训课程咨询表", lbl_name: "姓名 *", lbl_email: "电子邮箱 *", lbl_mobile: "手机号码 *", lbl_budget: "预算 *", lbl_courses: "请勾选感兴趣的培训课程：*", lbl_c1: "利用 Gemini AI 提升企业效率 (半天课程)", lbl_c2: "掌握 Google AI Suite (全天课程)", lbl_c3: "AI 卓越客户服务 (半天课程)", lbl_other: "其他", callConfirmBtn: "与 AI 通话 (拨打)", startChatBtn: "与 AI 聊天", opt_default: "请选择...", opt_1: "RM 4,000 以下", opt_2: "RM 4,000 至 RM 7,000", opt_3: "RM 7,000 至 RM 11,000", chatNotification: "✅ 聊天已启动！点击图标 ↘️", validation_error: "带有 * 的选项均为必填项。" }
     };
 
     function setLanguage(lang) {
@@ -149,7 +149,7 @@
 
     function loadChatWidget() {
         const agentId = CHAT_AGENT_MAPPING[currentLang];
-        // CRITICAL FIX: Match the actual ID 'budget'
+        // FIX: Pulling from ID 'budget' to match HTML
         const formData = {
             "user_name": document.getElementById('name').value.trim(),
             "user_budget": document.getElementById('budget').value,
