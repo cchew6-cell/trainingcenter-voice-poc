@@ -152,7 +152,7 @@
     // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
     const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
-    const IDLE_TIMEOUT_MS = 120000; 
+    const IDLE_TIMEOUT_MS = 180000; 
 
     // Global State
     let currentLang = 'english'; 
@@ -340,18 +340,17 @@
         return true;
     }
 
-    // --- RECTIFIED CHAT WIDGET LOADER ---
-    function loadChatWidget() {
-        const agentId = CHAT_AGENT_MAPPING[currentLang];
-        const widgetTitle = translations[currentLang].widgetTitle; 
-
-        const formData = {
-            "user_name": document.getElementById('name').value.trim(),
-            "user_budget": document.getElementById('budget').value,
-            "user_course": getSelectedCoursesString(),
-            "customer_email": document.getElementById('email').value.trim(),
-            "customer_phone": document.getElementById('mobile').value.trim()
-        };
+   // Within your loadChatWidget() function, ensure the mapping is clean
+function loadChatWidget() {
+    const agentId = CHAT_AGENT_MAPPING[currentLang];
+    
+    const formData = {
+        "user_name": document.getElementById('name').value.trim(),
+        "user_budget": document.getElementById('user_budget').value, // Ensure ID matches your HTML
+        "user_course": getSelectedCoursesString(),
+        "customer_email": document.getElementById('email').value.trim(),
+        "customer_phone": document.getElementById('mobile').value.trim()
+    };
         
         const jsonVars = JSON.stringify(formData);
         console.log("🚀 INJECTING VARIABLES FOR CHAT:", formData);
