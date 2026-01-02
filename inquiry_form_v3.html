@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jason Chew's AI Classroom [v3]</title>
     
-    <!-- Retell Call SDK (For Voice) -->
+    <!-- Retell Call SDK -->
     <script type="module">
         import { RetellWebClient } from 'https://esm.sh/retell-client-js-sdk@latest?bundle';
         window.RetellWebClient = RetellWebClient;
@@ -13,58 +13,35 @@
     
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #333; padding-bottom: 60px; }
-        
-        /* HEADER LAYOUT */
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .brand-section { display: flex; align-items: center; gap: 15px; }
         .brand-section h1 { margin: 0; font-size: 24px; line-height: 1.2; }
         .profile-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50; background-color: #eee; }
-        
-        /* LANGUAGE SWITCHER */
         .lang-switcher { font-size: 18px; font-weight: bold; color: #555; cursor: pointer; }
         .lang-option { padding: 0 5px; transition: color 0.3s; }
         .lang-option:hover { color: #000; }
         .lang-option.active { color: #d32f2f; text-decoration: underline; } 
-        
-        /* FORM STYLES */
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        
-        /* CHECKBOX STYLES */
         .checkbox-container { display: flex; flex-direction: column; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 6px; border: 1px solid #ddd; }
         .checkbox-item { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; cursor: pointer; }
         .checkbox-item input[type="checkbox"] { width: auto; margin-top: 3px; }
         #other_input_container { margin-top: 5px; margin-left: 25px; display: none; }
-        
-        /* BUTTON GROUP */
         .class-button-group { display: flex; gap: 10px; margin-top: 25px; }
-        
-        button { 
-            flex: 1; 
-            padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; 
-        }
-        
+        button { width: 100%; padding: 15px; cursor: pointer; border: none; color: white; border-radius: 6px; font-size: 16px; font-weight: bold; transition: background 0.3s; }
         #callConfirmBtn { background-color: #f44336; } 
         #callConfirmBtn:hover { background-color: #d32f2f; }
         #callConfirmBtn:disabled { background-color: #e57373; cursor: not-allowed; }
-
         #startChatBtn { background-color: #2196F3; } 
         #startChatBtn:hover { background-color: #1976D2; }
         #startChatBtn:disabled { background-color: #90CAF9; cursor: not-allowed; }
-
-        /* NOTIFICATION BOX */
         #chatHelperText { display: none; margin-top: 15px; padding: 15px; background-color: #e3f2fd; border: 1px solid #2196F3; color: #0d47a1; border-radius: 6px; text-align: center; font-weight: bold; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
         .contact-info { margin-top: 30px; font-size: 0.85em; color: #666; border-top: 1px solid #eee; padding-top: 10px; text-align: center;}
-
-        /* DISCLAIMER FOOTER */
         .legal-footer { margin-top: 40px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; color: #6c757d; line-height: 1.5; text-align: justify; }
         .legal-footer h4 { margin-top: 0; margin-bottom: 8px; font-size: 12px; color: #343a40; text-align: center; }
         .legal-footer strong { color: #555; }
-
-        /* WIDGET STYLING */
         retell-widget { z-index: 9999 !important; transform: scale(1.3); transform-origin: bottom right; right: 20px !important; bottom: 20px !important; }
     </style>
 </head>
@@ -132,17 +109,9 @@
     <!-- DISCLAIMER -->
     <div class="legal-footer">
         <h4>JasonChew.HDRCtrainer@gmail.com</h4>
-        <p>
-            <strong id="lbl_disclaimer_title">Legal Disclaimer:</strong> 
-            <span id="lbl_disclaimer_text">This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.</span>
-        </p>
-        <p>
-            <span id="lbl_owner_disclaimer">Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.</span>
-        </p>
-        <p>
-            <strong id="lbl_privacy_title">Privacy Notice:</strong> 
-            <span id="lbl_privacy_text">Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing.</span>
-        </p>
+        <p><strong>Legal Disclaimer:</strong> This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.</p>
+        <p>Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.</p>
+        <p><strong>Privacy Notice:</strong> Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing.</p>
     </div>
 
     <!-- AUDIO PLAYER -->
@@ -152,121 +121,36 @@
     </audio>
 
 <script>
-    // --------------------------------------------------------------------------------
-    // 1. CONFIGURATION & STATE VARIABLES
-    // --------------------------------------------------------------------------------
     const WEBHOOK_URL = "https://n8ncchew617.zeabur.app/webhook/79794821-1cc4-41eb-8012-5aa86bd76dfe"; 
-    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; // YOUR PUBLIC KEY
+    const RETELL_PUBLIC_KEY = "public_key_19d98735dc1a2a14ca801"; 
     const IDLE_TIMEOUT_MS = 60000; 
 
-    // Global State
-    let currentLang = 'english'; 
+    let currentLang = 'english';
     let isChatLoaded = false;
     let idleTimer = null;
     
-    // Voice Agent IDs (For Call Button)
     const VOICE_AGENT_MAPPING = {
         'english': 'agent_f04e08a6c3a28c017b5ece2b0a', 
         'malay':   'agent_5b1878d8340797676edfb17e08',    
         'chinese': 'agent_798042308572cdcdae32b94241'   
     };
 
-    // Chat Agent IDs (For Chat Button)
     const CHAT_AGENT_MAPPING = {
         'english': 'agent_53bfb2a24ce775fc88923be52e', 
         'malay':   'agent_9b25198e5b056b5412458dbbc6',    
-        'chinese': 'agent_57560d7227f800a4a8b449222b'
+        'chinese': 'agent_57560d7227f800a4a8b449222b'   
     };
 
-    // --- TRANSLATIONS (Complete) ---
     const translations = {
-        english: {
-            mainTitle: "Jason Chew's AI Classroom [v3]",
-            subTitle: "Training Course Inquiry Form",
-            lbl_name: "Name *",
-            lbl_email: "Email *",
-            lbl_mobile: "Mobile Phone Number [example: +6012345678] *",
-            lbl_budget: "Budget *",
-            lbl_courses: "Please tick the training course(s) that you are interested in: *",
-            lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)",
-            lbl_c2: "Mastering Google AI Suite For Transformative Office Productivity (Full Day course)",
-            lbl_c3: "AI-Enhanced Customer Service Excellence (Half Day course)",
-            lbl_other: "Other",
-            callConfirmBtn: "Speak To AI Agent (Call)",
-            startChatBtn: "Chat with AI Agent",
-            lbl_contact: "Contact:",
-            opt_default: "Select an option...",
-            opt_1: "Below RM 4,000",
-            opt_2: "RM 4,000 to RM 7,000",
-            opt_3: "RM 7,000 to RM 11,000",
-            chatNotification: "✅ Chat Initialized! Please click the icon in the bottom right corner ↘️",
-            widgetTitle: "Jason Chew AI's Classroom AI Assistant",
-            lbl_disclaimer_title: "Legal Disclaimer:",
-            lbl_disclaimer_text: "This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.",
-            lbl_owner_disclaimer: "Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.",
-            lbl_privacy_title: "Privacy Notice:",
-            lbl_privacy_text: "Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing."
-        },
-        malay: {
-            mainTitle: "Kelas AI Jason Chew [v3]",
-            subTitle: "Borang Pertanyaan Kursus Latihan",
-            lbl_name: "Nama *",
-            lbl_email: "E-mel *",
-            lbl_mobile: "Nombor Telefon Bimbit [contoh: +6012345678] *",
-            lbl_budget: "Bajet *",
-            lbl_courses: "Sila tanda kursus latihan yang anda berminat: *",
-            lbl_c1: "Tingkatkan Kecekapan Perusahaan Dengan Kuasa Gemini AI (Kursus Separuh Hari)",
-            lbl_c2: "Menguasai Google AI Suite Untuk Produktiviti Pejabat Transformatif (Kursus Penuh Hari)",
-            lbl_c3: "Kecemerlangan Perkhidmatan Pelanggan Dipertingkatkan AI (Kursus Separuh Hari)",
-            lbl_other: "Lain-lain",
-            callConfirmBtn: "Cakap dengan AI Agent (Call)",
-            startChatBtn: "Sembang dengan AI Agent",
-            lbl_contact: "Hubungi:",
-            opt_default: "Sila pilih satu...",
-            opt_1: "Bawah RM 4,000",
-            opt_2: "RM 4,000 hingga RM 7,000",
-            opt_3: "RM 7,000 hingga RM 11,000",
-            chatNotification: "✅ Sembang Bermula! Sila klik ikon di penjuru bawah kanan ↘️",
-            widgetTitle: "Pembantu AI Kelas AI Jason Chew",
-            lbl_disclaimer_title: "Penafian Undang-undang:",
-            lbl_disclaimer_text: "Alat ini disediakan untuk kemudahan pendidikan dan pentadbiran. Pengguna bertanggungjawab sepenuhnya untuk memastikan penggunaan alat ini tidak melanggar hak cipta, hak harta intelek, atau Syarat Perkhidmatan mana-mana sistem sasaran.",
-            lbl_owner_disclaimer: "Kelas AI Jason Chew (Pemilik Aplikasi) tidak bertanggungjawab atas sebarang pelanggaran hak cipta, penggunaan data tanpa kebenaran, atau akibat undang-undang yang timbul daripada tindakan pengguna.",
-            lbl_privacy_title: "Notis Privasi:",
-            lbl_privacy_text: "Sila ambil maklum bahawa semua panggilan suara dan sesi sembang mungkin direkodkan untuk tujuan latihan dan jaminan kualiti. Dengan menggunakan ciri-ciri ini, anda bersetuju dengan rakaman dan pemprosesan data tersebut."
-        },
-        chinese: {
-            mainTitle: "Jason Chew的AI智慧教室 [v3]",
-            subTitle: "培训课程咨询表",
-            lbl_name: "姓名 *",
-            lbl_email: "电子邮箱 *",
-            lbl_mobile: "手机号码 [例如: +6012345678] *",
-            lbl_budget: "预算 *",
-            lbl_courses: "请勾选您感兴趣的培训课程：*",
-            lbl_c1: "利用 Gemini AI 提升企业效率 (半天课程)",
-            lbl_c2: "掌握 Google AI Suite 实现办公生产力变革 (全天课程)",
-            lbl_c3: "AI 增强型卓越客户服务 (半天课程)",
-            lbl_other: "其他",
-            callConfirmBtn: "与 AI Agent 通话 (拨打)",
-            startChatBtn: "与 AI Agent 文字聊天",
-            lbl_contact: "联系方式:",
-            opt_default: "请选择...",
-            opt_1: "RM 4,000 以下",
-            opt_2: "RM 4,000 至 RM 7,000",
-            opt_3: "RM 7,000 至 RM 11,000",
-            chatNotification: "✅ 聊天已启动！请点击右下角的图标 ↘️",
-            widgetTitle: "Jason Chew AI 智慧教室 - AI 助手",
-            lbl_disclaimer_title: "法律免责声明：",
-            lbl_disclaimer_text: "本工具仅供教育和行政便利使用。用户自行负责确保使用本工具不会侵犯任何目标系统的版权、知识产权或服务条款。",
-            lbl_owner_disclaimer: "Jason Chew AI 智慧教室（应用所有者）不对任何版权侵权、未经授权的数据使用或因用户行为引起的法律后果承担责任。",
-            lbl_privacy_title: "隐私声明：",
-            lbl_privacy_text: "请注意，所有的语音通话和聊天记录可能会被录制，用于培训和质量保证。使用这些功能即表示您同意此类录音和数据处理。"
-        }
+        english: { mainTitle: "Jason Chew's AI Classroom [v3]", subTitle: "Training Course Inquiry Form", lbl_name: "Name *", lbl_email: "Email *", lbl_mobile: "Mobile Phone Number [example: +6012345678] *", lbl_budget: "Budget *", lbl_courses: "Please tick the training course(s) that you are interested in: *", lbl_c1: "Elevate Enterprise Efficiency With The Power of Gemini AI (Half Day course)", lbl_c2: "Mastering Google AI Suite For Transformative Office Productivity (Full Day course)", lbl_c3: "AI-Enhanced Customer Service Excellence (Half Day course)", lbl_other: "Other", callConfirmBtn: "Speak To AI Agent (Call)", startChatBtn: "Chat with AI Agent", lbl_contact: "Contact:", opt_default: "Select an option...", opt_1: "Below RM 4,000", opt_2: "RM 4,000 to RM 7,000", opt_3: "RM 7,000 to RM 11,000", chatNotification: "✅ Chat Initialized! Please click the icon in the bottom right corner ↘️", widgetTitle: "Jason Chew AI Assistant", lbl_disclaimer_title: "Legal Disclaimer:", lbl_disclaimer_text: "This tool is provided for educational and administrative convenience. Users are solely responsible for ensuring that their use of this tool does not breach the copyright, intellectual property rights, or Terms of Service of any target systems.", lbl_owner_disclaimer: "Jason Chew's AI Classroom (App Owner) assumes no liability for any copyright infringements, unauthorized data usage, or legal consequences arising from the actions of the user.", lbl_privacy_title: "Privacy Notice:", lbl_privacy_text: "Please be advised that all voice calls and chat sessions may be recorded for training and quality assurance purposes. By using these features, you consent to such recording and data processing." },
+        malay: { mainTitle: "Kelas AI Jason Chew [v3]", subTitle: "Borang Pertanyaan Kursus Latihan", lbl_name: "Nama *", lbl_email: "E-mel *", lbl_mobile: "Nombor Telefon Bimbit [contoh: +6012345678] *", lbl_budget: "Bajet *", lbl_courses: "Sila tanda kursus latihan yang anda berminat: *", lbl_c1: "Tingkatkan Kecekapan Perusahaan Dengan Kuasa Gemini AI (Kursus Separuh Hari)", lbl_c2: "Menguasai Google AI Suite Untuk Produktiviti Pejabat Transformatif (Kursus Penuh Hari)", lbl_c3: "Kecemerlangan Perkhidmatan Pelanggan Dipertingkatkan AI (Kursus Separuh Hari)", lbl_other: "Lain-lain", callConfirmBtn: "Cakap dengan AI Agent (Call)", startChatBtn: "Sembang dengan AI Agent", lbl_contact: "Hubungi:", opt_default: "Sila pilih satu...", opt_1: "Bawah RM 4,000", opt_2: "RM 4,000 hingga RM 7,000", opt_3: "RM 7,000 hingga RM 11,000", chatNotification: "✅ Sembang Bermula! Sila klik ikon di penjuru bawah kanan ↘️", widgetTitle: "Pembantu AI Kelas AI Jason Chew", lbl_disclaimer_title: "Penafian Undang-undang:", lbl_disclaimer_text: "Alat ini disediakan untuk kemudahan pendidikan dan pentadbiran. Pengguna bertanggungjawab sepenuhnya untuk memastikan penggunaan alat ini tidak melanggar hak cipta, hak harta intelek, atau Syarat Perkhidmatan mana-mana sistem sasaran.", lbl_owner_disclaimer: "Kelas AI Jason Chew (Pemilik Aplikasi) tidak bertanggungjawab atas sebarang pelanggaran hak cipta, penggunaan data tanpa kebenaran, atau akibat undang-undang yang timbul daripada tindakan pengguna.", lbl_privacy_title: "Notis Privasi:", lbl_privacy_text: "Sila ambil maklum bahawa semua panggilan suara dan sesi sembang mungkin direkodkan untuk tujuan latihan dan jaminan kualiti. Dengan menggunakan ciri-ciri ini, anda bersetuju dengan rakaman dan pemprosesan data tersebut." },
+        chinese: { mainTitle: "Jason Chew的AI智慧教室 [v3]", subTitle: "培训课程咨询表", lbl_name: "姓名 *", lbl_email: "电子邮箱 *", lbl_mobile: "手机号码 [例如: +6012345678] *", lbl_budget: "预算 *", lbl_courses: "请勾选您感兴趣的培训课程：*", lbl_c1: "利用 Gemini AI 提升企业效率 (半天课程)", lbl_c2: "掌握 Google AI Suite 实现办公生产力变革 (全天课程)", lbl_c3: "AI 增强型卓越客户服务 (半天课程)", lbl_other: "其他", callConfirmBtn: "与 AI Agent 通话 (拨打)", startChatBtn: "与 AI Agent 文字聊天", lbl_contact: "联系方式:", opt_default: "请选择...", opt_1: "RM 4,000 以下", opt_2: "RM 4,000 至 RM 7,000", opt_3: "RM 7,000 至 RM 11,000", chatNotification: "✅ 聊天已启动！请点击右下角的图标 ↘️", widgetTitle: "Jason Chew AI 智慧教室 - AI 助手", lbl_disclaimer_title: "法律免责声明：", lbl_disclaimer_text: "本工具仅供教育和行政便利使用。用户自行负责确保使用本工具不会侵犯任何目标系统的版权、知识产权或服务条款。", lbl_owner_disclaimer: "Jason Chew AI 智慧教室（应用所有者）不对任何版权侵权、未经授权的数据使用或因用户行为引起的法律后果承担责任。", lbl_privacy_title: "隐私声明：", lbl_privacy_text: "请注意，所有的语音通话和聊天记录可能会被录制，用于培训和质量保证。使用这些功能即表示您同意此类录音和数据处理。" }
     };
 
     function setLanguage(lang) {
         currentLang = lang;
         const t = translations[lang];
-        // Text Updating
+        // UI Updates...
         document.getElementById('mainTitle').innerText = t.mainTitle;
         document.getElementById('subTitle').innerText = t.subTitle;
         document.getElementById('lbl_name').innerText = t.lbl_name;
@@ -303,7 +187,6 @@
         if (isChatLoaded) loadChatWidget(); 
     }
 
-    // --- HELPER TO GET COURSES ---
     function getSelectedCoursesString() {
         let selectedCourses = [];
         document.querySelectorAll('input[name="course"]:checked').forEach((chk) => {
@@ -320,11 +203,7 @@
         const agentId = CHAT_AGENT_MAPPING[currentLang];
         const widgetTitle = translations[currentLang].widgetTitle; 
 
-        // 1. Wipe Session
-        localStorage.removeItem('retell-widget-session');
-        localStorage.clear();
-        sessionStorage.clear();
-        
+        // 1. Remove old
         endChatSession(false);
 
         // 2. Prepare Data
@@ -335,8 +214,6 @@
             "budget_requirement": document.getElementById('budget').value || "Not Specified",
             "course_requirement": getSelectedCoursesString()
         };
-        
-        console.log("🚀 INJECTING VARIABLES:", formData);
 
         // 3. Inject Script
         const script = document.createElement('script');
@@ -348,13 +225,13 @@
         script.setAttribute('data-agent-id', agentId);
         script.setAttribute('data-title', widgetTitle);
         
-        // --- UNIVERSAL INJECTION (ALL 3 ATTRIBUTES) ---
+        // --- SAFE INJECTION (BOTH ATTRIBUTES) ---
         const jsonVars = JSON.stringify(formData);
         script.setAttribute('data-dynamic-variables', jsonVars); 
         script.setAttribute('data-retell-llm-dynamic-variables', jsonVars);
-        script.setAttribute('data-metadata', jsonVars);
         
-        document.body.appendChild(script);
+        // Append to Head for safety
+        document.head.appendChild(script);
 
         // 4. Update UI
         setTimeout(() => {
@@ -365,7 +242,6 @@
         }, 1000);
     }
 
-    // --- IDLE TIMER ---
     function startIdleWatcher() {
         if (idleTimer) clearTimeout(idleTimer);
         idleTimer = setTimeout(() => {
@@ -388,7 +264,7 @@
         chatBtn.innerText = t.startChatBtn;
         chatBtn.disabled = false;
         document.getElementById('chatHelperText').style.display = 'none';
-        if (showAlert) alert("Chat session ended due to inactivity (1 minute).");
+        if (showAlert) alert("Chat session ended due to inactivity.");
     }
     ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => document.addEventListener(evt, resetIdleTimer));
 
